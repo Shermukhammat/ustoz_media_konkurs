@@ -5,7 +5,7 @@ from loader import db, dp, bot
 from aiogram.dispatcher.event.bases import SkipHandler, CancelHandler
 from asyncio import Semaphore
 from aiocache import SimpleMemoryCache
-# from aiogram.exceptions import ChatAdminRequired, ChatNotFound, Unauthorized
+from db import PreInvate
 
 cache = SimpleMemoryCache(ttl = 30)
 
@@ -17,10 +17,14 @@ class SubscribetionMiddleware(BaseMiddleware):
         data: Dict[str, Any],
     ) -> Any:
         run = True
+        if isinstance(event, Message) and event.text and event.text.startswith("/start"):
+            await check_payload(event)
+        
         if db.chanels:
             tg_user: TGUser = data["event_from_user"]
             if not await cache.get(tg_user.id):
                 run = await check_subscribtion(db.chanels, tg_user, event)
+
         
         if run:
             return await handler(event, data)
@@ -53,16 +57,34 @@ async def check_subscribtion(check_chanels: list[dict], tg_user: TGUser, event: 
             if event.data == "check":
                 await event.answer("❗️ Barcha kanallarga obuna bo'lmadingiz" if db.chanels_len > 1 else "❗️ Kanalga obuna bo'lmadingiz", show_alert=True)
             else:
-                await bot.send_message(text = db.need_subscribe_message,
-                                       chat_id=tg_user.id,
-                                       reply_markup=replay_markup)      
+                await bot.copy_message(chat_id=tg_user.id,
+                                   from_chat_id=db.DATA_CHANEL_ID,
+                                   message_id=db.need_subscribe_message,
+                                   reply_markup=replay_markup)  
         elif isinstance(event, Message):
-            await event.answer(db.need_subscribe_message,
-                               reply_markup=replay_markup)
+            await bot.copy_message(chat_id=tg_user.id,
+                                   from_chat_id=db.DATA_CHANEL_ID,
+                                   message_id=db.need_subscribe_message,
+                                   reply_markup=replay_markup)
         return False
     
     await cache.set(tg_user.id, True)
     return True
+
+
+async def check_payload(event: Message):
+    user = await db.get_user(event.from_user.id)
+    if user:
+        return
+    
+    command_text = event.text.strip()
+    payload = command_text.split(maxsplit=1)[1] if len(command_text.split()) > 1 else None
+    if payload and payload.isnumeric():
+        user = await db.get_user(int(payload))
+        if not user:
+            return
+        
+        await db.add_pre_invate(PreInvate(invated_user=user.id, user_id=event.from_user.id))
 
 
 dp.message.middleware(SubscribetionMiddleware())

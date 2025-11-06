@@ -71,12 +71,14 @@ class ParamsDB:
     
         self.config = DatabseConfig(self.params_data.get('database', {}))
         self.TOKEN = self.params_data.get('token')
-        self.data_chanel_id : int = self.params_data.get('data_chanel_id')
+        self.DATA_CHANEL_ID : int = self.params_data.get('data_chanel_id')
         self.dev_id : int = self.params_data.get('dev_id')
         self.chanels : list[dict] = self.params_data.get('chanels', [])
         self.need_invate : int = self.params_data.get('need_invate', 1)
-        self.need_subscribe_message : str = self.params_data.get('need_subscribe_message', "🚀 Loyihada ishtirok etish uchun quyidagilarga kanallarga azo boʼling. \n\nKeyin ✅ А'zo boʼldim tugmasini bosing")
+        self.need_subscribe_message : int = self.params_data.get('need_subscribe_message', 4)
+        self.welcome_message : str = self.params_data.get('welcome_media')
 
+        
         self.paramas_sem = Semaphore()
 
     @property
