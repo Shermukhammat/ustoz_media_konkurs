@@ -1,6 +1,6 @@
 from loader import db, dp, bot
 from aiogram import Router, types, F 
-from aiogram.filters import CommandStart
+from aiogram.filters import CommandStart, CommandObject
 from asyncio import Semaphore
 from states import UserStates
 from aiogram.fsm.context import FSMContext
@@ -16,26 +16,28 @@ SEND_NUMER_MESSAGE = "Sizga bog'lana olishimiz uchun pastdagi “📲 Telefon ra
 
 
 @r.message(CommandStart())
-async def command_start(update: types.Message, state: FSMContext):
+async def command_start(update: types.Message, state: FSMContext, command: CommandObject):
     user = await db.get_user(update.from_user.id)
     if user:
+        if command.args and command.args.isnumeric():
+            if int(command.args) == user.id:
+                await update.answer("❗️ O'zningizga ulashib bo'lmaydi")
+                return
+            
         await update.answer("salom")
     else:
-        await state.set_state(UserStates.get_number)
-        await update.answer(SEND_NUMER_MESSAGE, reply_markup=KeyboardButtons.SEND_MY_NUMBER)
+        await register_user(update)
 
 
 
 @r.callback_query(F.data == "check")
 async def check(update: types.CallbackQuery, state: FSMContext):
     await delete_callback(update)
-
     user = await db.get_user(update.from_user.id)
     if user:
         await update.message.answer("✅ Botdan foydalanishingiz mumkin !")
     else:
-        await state.set_state(UserStates.get_number)
-        await update.message.answer(SEND_NUMER_MESSAGE, reply_markup=KeyboardButtons.SEND_MY_NUMBER)
+        await register_user(update.message)
 
 
 async def delete_callback(update: types.CallbackQuery):
@@ -46,36 +48,17 @@ async def delete_callback(update: types.CallbackQuery):
 
 
 
-@r.message(UserStates.get_number)
-async def get_number(update: types.Message, state: FSMContext):
-    if update.contact:
-        async with register:
-            user, invater = await register_user(update, update.contact.phone_number)
-        
-        await state.clear()
-        await show_resolts(update, user, invater)
-
-    elif len(update.text) < 20 and check_number(update.text):
-        async with register:
-            user, invater = await register_user(update, update.text)
-
-        await state.clear()
-        await show_resolts(update, user, invater)
-        
-    else:
-        await update.answer(SEND_NUMER_MESSAGE, reply_markup=KeyboardButtons.SEND_MY_NUMBER)
+async def register_user(update: types.Message):
+    async with register:
+        user, invater = await register_user_to_db(update)
+    await show_resolts(update, user, invater)
 
 
 async def show_resolts(update: types.Message, user: User, invater: User):
     if user:
-        if db.welcome_message:
-            await bot.copy_message(chat_id=update.from_user.id,
-                                   from_chat_id=db.DATA_CHANEL_ID,
-                                   message_id=db.welcome_message,
-                                   reply_markup=KeyboardButtons.HOME)
-        else:
-            await update.answer("Assalomu alaykum {name}! {bot}ga xush kelibsiz".format(name=user.first_name, bot=db.bot.full_name),
-                                reply_markup=KeyboardButtons.HOME)
+        WELCOME_MESSAGE = "Assalomu alaykum {name}! {bot} bot ga xush kelibsiz. Siz 15 ta tanishingizni taklif qilsangiz bonus darsga ega bolasiz"
+        await update.answer(WELCOME_MESSAGE.format(name=user.first_name, bot=db.bot.full_name),
+                            reply_markup=KeyboardButtons.HOME)
         
     
     if user and invater:
@@ -84,24 +67,24 @@ async def show_resolts(update: types.Message, user: User, invater: User):
 
 
 
-async def register_user(update: types.Message, number: str) -> tuple[User, User]:
+async def register_user_to_db(update: types.Message) -> tuple[User, User]:
     user = await db.get_user(update.from_user.id)
     if user:
         return None, None
     
     user = User(id=update.from_user.id,
                 first_name=update.from_user.full_name,
-                username=update.from_user.username,
-                phone_number=number)
+                username=update.from_user.username)
     await db.register_user(user)
     pre_invate = await db.get_pre_invate(update.from_user.id)
+    await db.remove_pre_invate(update.from_user.id)
     if not pre_invate:
         return user, None
     
     invater = await db.get_user(pre_invate.invated_user)
     if not invater:
         return user, None
-    
+
     invater.invited_users += 1
     await db.update_user(invater.id, invited_users=invater.invited_users)
     return user, invater

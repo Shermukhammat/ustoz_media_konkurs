@@ -6,7 +6,7 @@ from states import UserStates
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons
 from utils import can_edit
-from .start import SEND_NUMER_MESSAGE
+from .start import register_user
 
 r = Router(name='main')
 dp.include_router(r)
@@ -16,8 +16,7 @@ register = Semaphore()
 async def main_message(update: types.Message, state: FSMContext):
     user = await db.get_user(update.from_user.id)
     if not user:
-        await state.set_state(UserStates.get_number)
-        await update.answer(SEND_NUMER_MESSAGE, reply_markup=KeyboardButtons.SEND_MY_NUMBER)
+        await register_user(update)
         return
     
     if update.text == "👥 Taklif qilgan do'stlarim":

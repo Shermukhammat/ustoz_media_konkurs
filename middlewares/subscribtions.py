@@ -8,6 +8,7 @@ from aiocache import SimpleMemoryCache
 from db import PreInvate
 
 cache = SimpleMemoryCache(ttl = 30)
+NEED_SUBCRIBE_MESSAGE = "🚀 Loyihada ishtirok etish uchun quyidagi kanalimzga a’zo bo‘ling. Keyin \"✅ A’zo bo‘ldim\" tugmasini bosing"
 
 class SubscribetionMiddleware(BaseMiddleware):
     async def __call__(
@@ -55,17 +56,13 @@ async def check_subscribtion(check_chanels: list[dict], tg_user: TGUser, event: 
         
         if isinstance(event, CallbackQuery):
             if event.data == "check":
-                await event.answer("❗️ Barcha kanallarga obuna bo'lmadingiz" if db.chanels_len > 1 else "❗️ Kanalga obuna bo'lmadingiz", show_alert=True)
+                await event.answer("❗️ Kanalga obuna bo'lmadingiz", show_alert=True)
             else:
-                await bot.copy_message(chat_id=tg_user.id,
-                                   from_chat_id=db.DATA_CHANEL_ID,
-                                   message_id=db.need_subscribe_message,
-                                   reply_markup=replay_markup)  
+                await event.message.answer(NEED_SUBCRIBE_MESSAGE, reply_markup=replay_markup)
+
         elif isinstance(event, Message):
-            await bot.copy_message(chat_id=tg_user.id,
-                                   from_chat_id=db.DATA_CHANEL_ID,
-                                   message_id=db.need_subscribe_message,
-                                   reply_markup=replay_markup)
+            await event.answer(NEED_SUBCRIBE_MESSAGE, reply_markup=replay_markup)
+
         return False
     
     await cache.set(tg_user.id, True)

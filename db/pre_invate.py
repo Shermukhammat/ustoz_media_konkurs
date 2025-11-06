@@ -44,3 +44,8 @@ class PreInvateManger:
         
         if row:
             return PreInvate(invated_user=row['invated_user'], user_id=row['user_id'])
+        
+    async def remove_pre_invate(self, user_id : int):
+        async with self.pool.acquire() as conn:
+            conn: Connection
+            await conn.execute("""DELETE FROM pre_invate WHERE user_id = $1;""", user_id)
