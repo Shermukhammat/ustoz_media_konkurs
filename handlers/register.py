@@ -62,7 +62,7 @@ async def get_number(update: types.Message, state: FSMContext):
         number = update.text
 
     else:
-        return await update.answer("❗️ Iltimos \"📲 Telefon raqamimni yuborish\" tugmasini bosing yoki +998951234567, 998951234567, 951234567 ko‘nishda raqamingizni yuboring.", reply_markup=KeyboardButtons.SEND_MY_NUMBER)
+        return await update.reply("❗️ Iltimos \"📲 Telefon raqamimni yuborish\" tugmasini bosing yoki +998951234567, 998951234567, 951234567 ko‘nishda raqamingizni yuboring.", reply_markup=KeyboardButtons.SEND_MY_NUMBER)
 
     state_data = await state.get_data()
     invater = state_data.get('invater')
@@ -135,3 +135,32 @@ async def approve_bonus_chanel_join(request: types.ChatJoinRequest):
         await request.approve()
         await bot.send_message(chat_id=user.id, text= "✅ Bonus video darslar kanaliga qoshilish sorovingiz qabul qilndi",
                                    reply_markup=InlineButtons.one_url_button("Kanalga kirish", BONUS_CHANEL_URL))
+        
+
+
+
+@r.message(StateFilter(UserStates.update_number))
+async def get_number(update: types.Message, state: FSMContext):
+    if update.contact:
+        number = update.contact.phone_number
+    
+    elif update.text and check_number(update.text):
+        number = update.text
+
+    elif update.text == "⬅️ Orqaga":
+        await state.clear()
+        await update.reply("✅ Telefon raqamini o'zgartirish bekor qilindi", reply_markup=KeyboardButtons.HOME)
+        return
+    
+    else:
+        return await update.reply("❗️ Iltimos \"📲 Telefon raqamimni yuborish\" tugmasini bosing yoki +998951234567, 998951234567, 951234567 ko‘nishda raqamingizni yuboring.", reply_markup=KeyboardButtons.SEND_MY_NUMBER_WITH_BACK)
+    
+    await state.clear()
+    await update.answer("✅ Telefon raqamingiz muvaffaqiyatli o'zgartirildi!", reply_markup=KeyboardButtons.HOME)
+    
+    user = await db.get_user(update.from_user.id)
+    if user.phone_number not in number:
+        await db.update_user(update.from_user.id, phone_number=number)
+    
+
+    

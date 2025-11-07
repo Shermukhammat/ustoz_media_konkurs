@@ -7,9 +7,14 @@ class KeyboardButtons:
         [KeyboardButton(text="📲 Telefon raqamimni yuborish", request_contact=True)]
         ], resize_keyboard=True, one_time_keyboard=True)
     
+    SEND_MY_NUMBER_WITH_BACK = ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="📲 Telefon raqamimni yuborish", request_contact=True)],
+        [KeyboardButton(text="⬅️ Orqaga")]
+        ], resize_keyboard=True, one_time_keyboard=True)
+    
     HOME = ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton(text="🔗 Maxsus havolam")],
-        [KeyboardButton(text="👥 Taklif qilgan do'stlarim")]
+        [KeyboardButton(text="🔗 Maxsus havolam"), KeyboardButton(text="👥 Taklif qilgan do'stlarim")],
+        [KeyboardButton(text="📱 Telefon raqamim"), KeyboardButton(text="📖 Yordam")]
     ], resize_keyboard=True)
 
     ADMIN_PANEL = ReplyKeyboardMarkup(keyboard=[
@@ -17,6 +22,7 @@ class KeyboardButtons:
         [KeyboardButton(text="👨🏻‍💻 Adminlar"), KeyboardButton(text="📊 Statistika")],
         [KeyboardButton(text="⬅️ Chiqish")]
     ], resize_keyboard=True)
+
 
 
 
@@ -39,3 +45,7 @@ class InlineButtons:
                                    [InlineKeyboardButton(text=name, url=url)]
                                 ])
 
+    def one_callback_button(name: str, data: str):
+        return InlineKeyboardMarkup(inline_keyboard=[
+                                   [InlineKeyboardButton(text=name, callback_data=data)]
+                                ])
