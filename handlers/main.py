@@ -6,7 +6,7 @@ from states import UserStates
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
 from utils import can_edit
-from .register import start_registring, MAIN_MESSAGE
+from .context import start_registring, MAIN_MESSAGE
 
 r = Router(name='main')
 dp.include_router(r)

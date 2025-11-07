@@ -1,22 +1,21 @@
 from loader import db, dp, bot
 from aiogram import Router, types, F 
-from aiogram.filters import CommandStart, CommandObject
+from aiogram.filters import CommandStart, CommandObject, StateFilter
 from asyncio import Semaphore
-from states import UserStates
+from states import UserStates, RegisterStates
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
 from utils import can_edit, check_number
 from db import User
-from .register import start_registring, MAIN_MESSAGE
+from .context import start_registring, MAIN_MESSAGE, WELCOME_MESSAGE
 from aiogram.fsm.state import any_state
 
 r = Router(name='start')
 dp.include_router(r)
 register = Semaphore()
-SEND_NUMER_MESSAGE = "Sizga bog'lana olishimiz uchun pastdagi “📲 Telefon raqamimni yuborish” tugmasini bosib telefon raqamingizni yuboring yoki raqamingizni 951234567 kabi yozib yuboring."
 
 
-@r.message(CommandStart(), any_state)
+@r.message(CommandStart(), StateFilter(any_state))
 async def command_start(update: types.Message, state: FSMContext, command: CommandObject):
     user = await db.get_user(update.from_user.id)
     if user:
