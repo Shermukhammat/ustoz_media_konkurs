@@ -12,6 +12,12 @@ class KeyboardButtons:
         [KeyboardButton(text="👥 Taklif qilgan do'stlarim")]
     ], resize_keyboard=True)
 
+    ADMIN_PANEL = ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="⬇️ Foydlanuvchilar excel jadvali"), KeyboardButton(text="🚀 Xabar yuborish")],
+        [KeyboardButton(text="👨🏻‍💻 Adminlar"), KeyboardButton(text="📊 Statistika")],
+        [KeyboardButton(text="⬅️ Chiqish")]
+    ], resize_keyboard=True)
+
 
 
 class InlineButtons:
@@ -28,4 +34,8 @@ class InlineButtons:
         buttons.append([InlineKeyboardButton(text="✅ А'zo boʼldim", callback_data="check2")])
         return InlineKeyboardMarkup(inline_keyboard=buttons)
 
+    def one_url_button(name: str, url: str):
+        return InlineKeyboardMarkup(inline_keyboard=[
+                                   [InlineKeyboardButton(text=name, url=url)]
+                                ])
 

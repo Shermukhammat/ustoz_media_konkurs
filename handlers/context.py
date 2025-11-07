@@ -38,7 +38,6 @@ Do‘stlarni taklif qilish uchun maxsus linkingizni "Mening shaxsiy linkim 🔗"
 Nechta do'stingiz qo'shilganini bilish uchun "Mening hisobim 📑" tugmasini bosing"""
 
 
-
 async def start_registring(update: types.Message, state: FSMContext, invater : User = None):
     await state.set_state(RegisterStates.check_sub)
     if invater:

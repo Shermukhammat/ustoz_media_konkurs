@@ -1,0 +1,91 @@
+from loader import db, dp, bot
+from aiogram import Router, types, F 
+from aiogram.filters import Command
+from asyncio import Semaphore
+from states import AdminPanel
+from aiogram.fsm.context import FSMContext
+from buttons import KeyboardButtons, InlineButtons
+from utils import can_edit
+from .context import start_registring, MAIN_MESSAGE
+from db import User
+from asyncio import sleep
+import pandas as pd
+
+
+r = Router(name='main')
+dp.include_router(r)
+
+
+@r.message(Command('admin'))
+async def show_admin_panel(update: types.Message, state: FSMContext):
+    user = await db.get_user(update.from_user.id)
+    if user and user.id == db.dev_id:
+        user.is_admin = True
+        await db.update_user(id = user.id, is_admin = True)
+
+    if user and user.is_admin:
+        await state.set_state(AdminPanel.main)
+        await update.answer("👨🏻‍💻 Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
+
+
+
+
+@r.message(Command('id'))
+async def show_id(update: types.Message):
+    await update.reply(f"`{update.from_user.id}`", parse_mode='markdown')
+
+
+@r.channel_post(Command('id'))
+async def show_chanel_id(update: types.Message):
+    msg = await update.reply(f"`{update.chat.id}`", parse_mode='markdown')
+    
+    await sleep(3)
+    await msg.delete()
+    await update.delete()
+
+
+@r.message(AdminPanel.main)
+async def admin_panel_main(update: types.Message, state: FSMContext):
+    if update.text == "⬅️ Chiqish":
+        await state.clear()
+        await update.answer("Admin paneldan chiqdingiz", reply_markup=KeyboardButtons.HOME)
+    
+    elif update.text == "📊 Statistika":
+        pass
+    
+    elif update.text == "👨🏻‍💻 Adminlar":
+        pass 
+
+    elif update.text == "⬇️ Foydlanuvchilar excel jadvali":
+        await send_users_doc(update)
+    
+    elif update.text == "🚀 Xabar yuborish":
+        pass 
+
+    else:
+        await update.answer("👨🏻‍💻 Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
+    
+
+
+from asyncio import Semaphore 
+import os 
+
+
+sema = Semaphore()
+os.makedirs('files/tmp', exist_ok=True)
+
+async def send_users_doc(update: types.Message):
+    async with sema:
+        df = pd.DataFrame([{'Id': user.id, 
+                            'I.F': user.full_name,
+                            "No'mer" : user.phone_number,
+                            "Username": user.username,
+                            "Taklif qildi": user.invited_users,
+                            "Ro'yxatdan o'tdi": user.registred_readble,
+                            } for user in await db.get_useres()])
+        
+        df.to_excel('files/tmp/users.xlsx', index=False)
+
+    await bot.send_chat_action(chat_id=update.chat.id, action='upload_document')
+    await sleep(2)
+    await bot.send_document(chat_id=update.chat.id, document=types.FSInputFile('files/tmp/users.xlsx'))

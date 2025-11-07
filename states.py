@@ -11,3 +11,6 @@ class RegisterStates(StatesGroup):
     check_sub = State()
     get_number = State()
     
+
+class AdminPanel(StatesGroup):
+    main = State()

@@ -5,7 +5,6 @@ from aiocache import SimpleMemoryCache
 from datetime import datetime, timedelta
 from pytz import timezone
 
-
 TZ = timezone('Asia/Tashkent')
 
 class UserStatus:
@@ -39,8 +38,21 @@ class User:
             self.registered = datetime.now()
 
     @property
+    def full_name(self) -> str:
+        if self.last_name and self.first_name:
+            return f"{self.first_name} {self.last_name}"
+        elif self.first_name:
+            return self.first_name
+        elif self.last_name:
+            return self.last_name
+        return "Nomalum"
+    
+
+
+    @property
     def registred_readble(self) -> str:
-        return f"{self.registered.year}.{self.registered.month}.{self.registered.day} {self.registered.hour}:{self.registered.second}"
+        registered = self.registered.astimezone(TZ)
+        return f"{registered.year}.{registered.month}.{registered.day} {registered.hour}:{registered.second}"
 
     @property
     def is_active(self) -> bool:

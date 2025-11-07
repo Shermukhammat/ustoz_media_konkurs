@@ -8,6 +8,7 @@ from buttons import KeyboardButtons, InlineButtons
 from utils import can_edit, check_number
 from db import User
 from .context import start_registring, SEND_NUMBER_MESSAGE, MAIN_MESSAGE
+import random, asyncio
 
 r = Router(name='start')
 dp.include_router(r)
@@ -80,6 +81,7 @@ async def register_user(update: types.Message, invater: User, number: str):
         user = User(id = update.from_user.id, 
                     first_name=update.from_user.first_name, 
                     last_name=update.from_user.last_name, 
+                    username=update.from_user.username,
                     phone_number=number)
         await db.register_user(user)
         if invater:
@@ -91,8 +93,7 @@ async def register_user(update: types.Message, invater: User, number: str):
     await update.answer(MAIN_MESSAGE, reply_markup=InlineButtons.HOME)
 
     if invater:
-        await bot.send_message(text = f"Sizning havolangiz orqali {update.from_user.first_name} botdan royxatdan o'tdi. Jami taklif qilgan dostlaringiz {i.invited_users} ta.",
-                               chat_id = invater.id)
+        await reward_invater(i, user)
 
 
 
@@ -104,3 +105,33 @@ async def is_subscribed(user_id : int, chanel : str):
         return False  
     except Exception as e:
         return False
+
+
+BONUS_CHNNAEL_ID, BONUS_CHANEL_URL = -1002598868618, 'https://t.me/+JnmQJIWlgTw2YzAy'
+GIFT_CHANEL_ID, GIFT_CHANEL_URL = 1, ''
+BONUS_POINT, GIFT_POINT = 1, 2
+
+async def reward_invater(invater: User, user: User):
+    if invater.invited_users > BONUS_POINT:
+        pass
+
+
+    elif invater.invited_users == BONUS_POINT:
+        await bot.send_message(chat_id=invater.id, text=f"{user.first_name} sizning taklif havolingiz orqali royxatdan o'tdi!")
+        await asyncio.sleep(3)
+        await bot.send_message(chat_id=invater.id, text=random.choice(['🎉', '🥳']))
+        await asyncio.sleep(2)
+        await bot.send_message(chat_id=invater.id, 
+                               text="Tabriklaymiz {name} sizga bonus darslar berildi! Quydagi havola orqali bonus darslar kanaliga qo'shling 👇".format(name=invater.first_name),
+                               reply_markup=InlineButtons.one_url_button("📚 Qo'shilish", BONUS_CHANEL_URL))
+    else:
+        pass
+
+
+@r.chat_join_request(F.chat.id == BONUS_CHNNAEL_ID)
+async def approve_bonus_chanel_join(request: types.ChatJoinRequest):
+    user = await db.get_user(request.from_user.id)
+    if user and user.invited_users >= BONUS_POINT:
+        await request.approve()
+        await bot.send_message(chat_id=user.id, text= "✅ Bonus video darslar kanaliga qoshilish sorovingiz qabul qilndi",
+                                   reply_markup=InlineButtons.one_url_button("Kanalga kirish", BONUS_CHANEL_URL))
