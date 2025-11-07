@@ -24,7 +24,7 @@ async def command_start(update: types.Message, state: FSMContext, command: Comma
                 await update.answer("❗️ O'zningizga ulashib bo'lmaydi")
                 return
             
-        await update.answer(MAIN_MESSAGE.format(name=user.first_name, bot=db.bot.full_name), reply_markup=InlineButtons.HOME)
+        await update.answer(MAIN_MESSAGE.format(name=user.first_name, bot=db.bot.full_name, bonus=db.BONUS_POINT, gift=db.GIFT_POINT), reply_markup=InlineButtons.HOME)
     else:
         if command.args and command.args.isnumeric():
             invater = await db.get_user(int(command.args))

@@ -14,3 +14,7 @@ class RegisterStates(StatesGroup):
 
 class AdminPanel(StatesGroup):
     main = State()
+
+    get_ads_media = State()
+    get_ads_button = State()
+    confirm_ads_send = State()

@@ -23,8 +23,23 @@ class KeyboardButtons:
         [KeyboardButton(text="⬅️ Chiqish")]
     ], resize_keyboard=True)
 
+    def back(skip: bool = False) -> ReplyKeyboardMarkup:
+        if skip:
+            return ReplyKeyboardMarkup(keyboard=[
+            [KeyboardButton(text="⬅️ Orqaga")],
+            [KeyboardButton(text="➡️ Keyingi")]
+        ], resize_keyboard=True)
+        return ReplyKeyboardMarkup(keyboard=[
+                [KeyboardButton(text="⬅️ Orqaga")]
+            ], resize_keyboard=True)
+        
 
-
+    @staticmethod
+    def confirm_send_ads()-> ReplyKeyboardMarkup:
+        return ReplyKeyboardMarkup(keyboard=[
+            [KeyboardButton(text="✅ Yuborish")],
+            [KeyboardButton(text="⬅️ Orqaga")]
+        ], resize_keyboard=True)
 
 class InlineButtons:
     HOME = InlineKeyboardMarkup(inline_keyboard=[

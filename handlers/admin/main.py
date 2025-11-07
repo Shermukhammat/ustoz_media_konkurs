@@ -6,13 +6,12 @@ from states import AdminPanel
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
 from utils import can_edit
-from .context import start_registring, MAIN_MESSAGE
 from db import User
 from asyncio import sleep
 import pandas as pd
 
 
-r = Router(name='main')
+r = Router(name='admin')
 dp.include_router(r)
 
 
@@ -60,7 +59,9 @@ async def admin_panel_main(update: types.Message, state: FSMContext):
         await send_users_doc(update)
     
     elif update.text == "🚀 Xabar yuborish":
-        pass 
+        await state.set_state(AdminPanel.get_ads_media)
+        await update.answer("1ta mediadan tashkil topgan xabaringizni yuboring. Rasm, video, fayl, video yoki audio xabar. Agar foydlnuvchi ismni postga qoymoqchi bolsanigz {name} deb yozing", 
+                            reply_markup=KeyboardButtons.back())
 
     else:
         await update.answer("👨🏻‍💻 Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)

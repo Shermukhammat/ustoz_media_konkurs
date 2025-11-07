@@ -27,17 +27,17 @@ MAIN_MESSAGE = """❓ Tanishlarni qanday qo’shish kerak va Ballar qanday hisob
 
 +1 ball (har bir do'st uchun)
 
-Siz 10 ta dostingizni taklif qilsangiz sizga “bonus darlar”     
+Siz {bonus} ta dostingizni taklif qilsangiz sizga “bonus darlar”     
 kanali taqdim etiladi. 
 
-Taklif qilingan dostlar soni 10+ bolganida sizda “maxsus sovgʻa” uchun oyin boshlanadi va jonli efirda aniqlaymiz eshigingizgacha dastafka 🚚 qilib beramiz
+Taklif qilingan dostlar soni {gift}+ bolganida sizda “maxsus sovgʻa” uchun oyin boshlanadi va jonli efirda aniqlaymiz eshigingizgacha dastafka 🚚 qilib beramiz
 
 
 Faollik ko‘rsating, vazifalarni bajaring va o‘yin davomida kafolatlangan sovg‘alarni qo‘lga kiriting
 
-Do‘stlarni taklif qilish uchun maxsus linkingizni "Mening shaxsiy linkim 🔗" tugmasini bosish orqali olishingiz mumkin.
+Do‘stlarni taklif qilish uchun maxsus linkingizni "🔗 Maxsus havolam" tugmasini bosish orqali olishingiz mumkin.
 
-Nechta do'stingiz qo'shilganini bilish uchun "Mening hisobim 📑" tugmasini bosing"""
+Nechta do'stingiz qo'shilganini bilish uchun "👥 Taklif qilgan do'stlarim" tugmasini bosing"""
 
 
 async def start_registring(update: types.Message, state: FSMContext, invater : User = None):

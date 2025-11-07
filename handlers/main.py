@@ -16,21 +16,20 @@ register = Semaphore()
 INVATE_POST_TEXT = "Konkursda qatnashish uchun quyidagi havola orqali o'ting 👇👇👇 {url}"
 INVATE_CONTENT = 5
 
-@r.message()
+@r.message(F.text)
 async def main_message(update: types.Message, state: FSMContext):
     user = await db.get_user(update.from_user.id)
     if not user:
         return await start_registring(update, state)
     
     if update.text == "👥 Taklif qilgan do'stlarim":
-        await update.answer("siz {n}ta do'stingizni taklif qildingiz".format(n=user.invited_users),
-                            reply_markup=KeyboardButtons.HOME)
+        await show_points(update, user)
     
     elif update.text == "🔗 Maxsus havolam":
         await send_invate_post(update, user)
 
     elif update.text == "📖 Yordam":
-        await update.answer(MAIN_MESSAGE.format(name=user.first_name, bot=db.bot.full_name), reply_markup=InlineButtons.HOME)   
+        await update.answer(MAIN_MESSAGE.format(name=user.first_name, bot=db.bot.full_name, bonus=db.BONUS_POINT, gift=db.GIFT_POINT), reply_markup=InlineButtons.HOME)   
     
     elif update.text == "📱 Telefon raqamim":
         await update.answer(
@@ -66,11 +65,36 @@ async def send_invate_post(update: types.Message, user: User):
 
 
 
-
-
-
 @r.callback_query(F.data == "update_number")
 async def update_number(update: types.CallbackQuery, state: FSMContext):
     await state.set_state(UserStates.update_number)
     await update.answer("⏳")
     await update.message.answer("❗️ Iltimos \"📲 Telefon raqamimni yuborish\" tugmasini bosing yoki +998951234567, 998951234567, 951234567 ko‘nishda raqamingizni yuboring.", reply_markup=KeyboardButtons.SEND_MY_NUMBER_WITH_BACK)
+
+
+async def show_points(update: types.Message, user: User):
+    invited = user.invited_users
+    bonus_needed = max(0, db.BONUS_POINT - invited)
+    gift_needed = max(0, db.GIFT_POINT - invited)
+    markup = InlineButtons.one_url_button('📚 Bonus video darslar', db.BONUS_CHANEL_URL) if db.BONUS_POINT <= user.invited_users else KeyboardButtons.HOME
+    TEXT = f"""
+<b>Taklif qilingan do'stlar:</b> {invited}
+
+{get_bonus_video_status(bonus_needed)}
+{get_giveaway_status(gift_needed)}
+"""
+    await update.answer(
+        TEXT.strip(),
+        reply_markup=markup,
+        parse_mode="HTML",
+    )
+
+def get_bonus_video_status(needed: int) -> str:
+    if needed == 0:
+        return "✅<b>Bonus video darslar:</b> Qo'lga kiritildi"
+    return f"❗️<b>Bonus video darslar:</b> {needed} ta do'st taklif qiling."
+
+def get_giveaway_status(needed: int) -> str:
+    if needed == 0:
+        return "✅<b>Maxsus sovg'a :</b> Ishtirok huquqi mavjud."
+    return f"❗️<b>Maxsus sovg'a :</b>{needed}+ ta do'st taklif qiling."
