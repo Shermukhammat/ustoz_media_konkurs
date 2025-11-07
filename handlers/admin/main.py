@@ -51,7 +51,9 @@ async def admin_panel_main(update: types.Message, state: FSMContext):
         await update.answer("Admin paneldan chiqdingiz", reply_markup=KeyboardButtons.HOME)
     
     elif update.text == "📊 Statistika":
-        pass
+        info = await db.get_statistic()
+        await update.answer(f"🟢 Aktiv foydlanuvchilar: {info.activ_users} \n🚶 Tark etganlar: {info.lived_users}  \n➕ Bugun {info.today_joined} ta foydalanuchi qo'shildi \n➕ Bu hafta {info.week_joined} ta foydalanuchi qo'shildi \n➕ Bu oy {info.month_joined} ta foydalanuchi qo'shildi \n🔥 Bugun botdan {info.dayly_users} ta odam foydalandi",
+                            reply_markup = KeyboardButtons.ADMIN_PANEL)
     
     elif update.text == "👨🏻‍💻 Adminlar":
         text = "📑 Adminlar: \n"

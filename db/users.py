@@ -78,6 +78,7 @@ class UserManger:
                                invited_users INTEGER DEFAULT 0,
                                is_admin BOOLEAN DEFAULT FALSE
                            );""")
+            await conn.execute("""CREATE TABLE IF NOT EXISTS activity (id BIGINT UNIQUE); """)
 
     async def register_user(self, user : User):
         async with self.pool.acquire() as conn:
@@ -85,6 +86,7 @@ class UserManger:
             await conn.execute(""" INSERT INTO users (id, first_name, last_name, registered, status, username, phone_number) 
                                   VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (id) DO NOTHING;""",
                                   user.id, user.first_name, user.last_name, user.registered, user.status, user.username, user.phone_number)
+            await conn.execute(""" INSERT INTO activity (id) VALUES ($1) ON CONFLICT (id) DO NOTHING; """, user.id)
         await self.users_cache.set(user.id, user)
         
     async def get_user(self, id : int) -> User:
@@ -95,6 +97,8 @@ class UserManger:
         async with self.pool.acquire() as conn:
             conn: Connection
             row = await conn.fetchrow("""SELECT * FROM users WHERE id = $1;""", id)
+            if row:
+                await conn.execute(""" INSERT INTO activity (id) VALUES ($1) ON CONFLICT (id) DO NOTHING; """, id)
 
         if row:
             user = User(id = row['id'], 
@@ -106,6 +110,7 @@ class UserManger:
                         is_admin=row['is_admin'],
                         username=row['username'],
                         phone_number=row['phone_number'])
+            
             await self.users_cache.set(id, user)
             return user
       

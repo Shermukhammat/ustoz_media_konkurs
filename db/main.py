@@ -4,13 +4,14 @@ from .users import UserManger
 from .params import ParamsDB
 from aiogram.types import User
 from .pre_invate import PreInvateManger
+from .statistic import Statistic
 
-
-class DataBase(ParamsDB, UserManger, PreInvateManger):
+class DataBase(ParamsDB, UserManger, PreInvateManger, Statistic):
     def __init__(self, config : str) -> None:
         ParamsDB.__init__(self, config)
         UserManger.__init__(self)
         PreInvateManger.__init__(self)
+        Statistic.__init__(self)
 
         self.pool : Pool = None
         self.bot : User = None
