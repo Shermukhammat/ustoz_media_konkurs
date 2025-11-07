@@ -14,3 +14,18 @@ class KeyboardButtons:
 
 
 
+class InlineButtons:
+    HOME = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔗 Maxsus havolam", callback_data="url")]
+    ])
+
+    @staticmethod
+    def chanels(chanels: list[dict]) -> InlineKeyboardMarkup:
+        buttons = [
+            [InlineKeyboardButton(text=chanel.get('name', 'Kanal'), url=chanel.get('url'))]
+            for chanel in chanels
+        ]
+        buttons.append([InlineKeyboardButton(text="✅ А'zo boʼldim", callback_data="check2")])
+        return InlineKeyboardMarkup(inline_keyboard=buttons)
+
+

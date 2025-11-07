@@ -18,8 +18,9 @@ class SubscribetionMiddleware(BaseMiddleware):
         data: Dict[str, Any],
     ) -> Any:
         run = True
-        if isinstance(event, Message) and event.text and event.text.startswith("/start"):
-            await check_payload(event)
+        user = await db.get_user(event.from_user.id)
+        if not user:
+            return await handler(event, data)
         
         if db.chanels:
             tg_user: TGUser = data["event_from_user"]
