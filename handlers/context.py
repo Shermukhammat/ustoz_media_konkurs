@@ -8,8 +8,10 @@ from db import User
 
 SEND_NUMBER_MESSAGE = """
 🎉 Konkursimzda ishtirok etayotganingizdan xursandmiz!
+
 Siz bilan bog‘lanishimiz uchun quyidagi “📲 Telefon raqamimni yuborish” tugmasini bosib telefon raqamingizni yuboring — yoki raqamingizni 951234567 kabi yozib yuborishingiz mumkin.
-Sovg‘angizni yetkazib berish uchun telefon raqamingiz zarur. Biz siz bilan bog‘lanib, sovg‘angizni to‘g‘ridan-to‘g‘ri eshigingizgacha yetkazib beramiz 🚚✨
+
+❗️Sovg‘angizni yetkazib berish uchun telefon raqamingiz zarur. Biz siz bilan bog‘lanib, sovg‘angizni to‘g‘ridan-to‘g‘ri eshigingizgacha yetkazib beramiz 🚚✨
 """
 
 

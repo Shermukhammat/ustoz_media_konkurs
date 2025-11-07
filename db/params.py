@@ -77,7 +77,10 @@ class ParamsDB:
         self.need_invate : int = self.params_data.get('need_invate', 1)
         self.need_subscribe_message : int = self.params_data.get('need_subscribe_message', 4)
         self.welcome_message : str = self.params_data.get('welcome_media')
-
+        self.BONUS_CHNNAEL_ID = self.params_data.get('bonus_chanel_id', -1002598868618)
+        self.BONUS_CHANEL_URL = self.params_data.get('bonus_chanel_url', 'https://t.me/+JnmQJIWlgTw2YzAy')
+        self.BONUS_POINT = self.params_data.get('bonus_point', 1)
+        self.GIFT_POINT = self.params_data.get('gift_point', 2)
         
         self.paramas_sem = Semaphore()
 
