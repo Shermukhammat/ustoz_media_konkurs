@@ -45,6 +45,9 @@ class InlineButtons:
     HOME = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="🔗 Maxsus havolam", callback_data="url")]
     ])
+    ADMINS_BUTTON = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="➕", callback_data='add_admin'), InlineKeyboardButton(text="➖", callback_data='remove_admin')]
+    ])
 
     @staticmethod
     def chanels(chanels: list[dict]) -> InlineKeyboardMarkup:

@@ -103,6 +103,7 @@ class UserManger:
                         invited_users=row['invited_users'],
                         registered=row['registered'], 
                         status=row['status'], 
+                        is_admin=row['is_admin'],
                         username=row['username'],
                         phone_number=row['phone_number'])
             await self.users_cache.set(id, user)

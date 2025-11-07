@@ -43,6 +43,7 @@ async def show_chanel_id(update: types.Message):
     await update.delete()
 
 
+
 @r.message(AdminPanel.main)
 async def admin_panel_main(update: types.Message, state: FSMContext):
     if update.text == "⬅️ Chiqish":
@@ -53,7 +54,10 @@ async def admin_panel_main(update: types.Message, state: FSMContext):
         pass
     
     elif update.text == "👨🏻‍💻 Adminlar":
-        pass 
+        text = "📑 Adminlar: \n"
+        for index, admin in enumerate(await db.get_admins()):
+            text += f"\n{index+1}. {admin.full_name} \n🆔: <code>{admin.id}</code>"
+        await update.answer(text, parse_mode='HTML', reply_markup=InlineButtons.ADMINS_BUTTON)
 
     elif update.text == "⬇️ Foydlanuvchilar excel jadvali":
         await send_users_doc(update)
@@ -90,3 +94,68 @@ async def send_users_doc(update: types.Message):
     await bot.send_chat_action(chat_id=update.chat.id, action='upload_document')
     await sleep(2)
     await bot.send_document(chat_id=update.chat.id, document=types.FSInputFile('files/tmp/users.xlsx'))
+
+
+
+@r.callback_query(F.data == 'add_admin')
+async def add_admin(update: types.CallbackQuery, state: FSMContext):
+    await state.set_state(AdminPanel.add_admin)
+    await update.message.answer("Admin qilmoqchi bo'lgan foydalanuvchin idsnini yuboring. Idni /id commandasi bilan olish mumkun",
+                        reply_markup=KeyboardButtons.back()) 
+
+
+@r.callback_query(F.data == 'remove_admin')
+async def remove_admin(update: types.CallbackQuery, state: FSMContext):
+    await state.set_state(AdminPanel.remove_admin)
+    await update.message.answer("Olib tashlamoqchi bo'lgan admin idsnini yuboring. Idni /id commandasi bilan olish mumkun",
+                        reply_markup=KeyboardButtons.back()) 
+
+@r.message(AdminPanel.add_admin, F.text)
+async def creare_admin(update: types.Message, state: FSMContext):
+    if update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.main)
+        await update.answer("Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
+    
+    elif update.text.isnumeric():
+        if int(update.text) == update.from_user.id:
+            await update.answer("❗️ Siz allaqochon adminsiz", reply_markup=KeyboardButtons.back())
+            return
+        user = await db.get_user(int(update.text))
+        if user:
+            await db.update_user(id = user.id, is_admin = True)
+            await state.set_state(AdminPanel.main)
+            await update.answer("✅ Admin qo'shildi", reply_markup=KeyboardButtons.ADMIN_PANEL)
+
+        else:
+            await update.reply("❗️ Bunday foydalanuvchi topilmadi", reply_markup=KeyboardButtons.back())
+
+    else:
+        await update.reply("❗️ Iltimos idni to'g'ri kiriting", reply_markup=KeyboardButtons.back())
+
+
+
+@r.message(AdminPanel.remove_admin, F.text)
+async def remove_admin(update: types.Message, state: FSMContext):
+    if update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.main)
+        await update.answer("Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
+
+    elif update.text.isnumeric():
+        user = await db.get_user(int(update.text))
+
+        if user and user.is_admin:        
+            if user.id == update.from_user.id:
+                await update.answer("😁 O'zingizni o'chira olmaysiz", reply_markup=KeyboardButtons.back())
+            else:
+                await state.set_state(AdminPanel.main)
+                await db.update_user(id = user.id, is_admin = False)
+                await update.answer("✅ Admin o'chirildi", reply_markup=KeyboardButtons.ADMIN_PANEL)
+        else:
+            await update.reply("❗️ Bunday admin topilmadi", reply_markup=KeyboardButtons.back())
+    else:
+        await update.reply("❗️ Iltimos idni to'g'ri kiriting", reply_markup=KeyboardButtons.back())
+
+
+# @r.message(F.sticker)
+# async def sticker(update: types.Message):
+#     print(update.sticker.file_id)

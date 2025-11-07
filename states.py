@@ -18,3 +18,6 @@ class AdminPanel(StatesGroup):
     get_ads_media = State()
     get_ads_button = State()
     confirm_ads_send = State()
+
+    add_admin = State()
+    remove_admin = State()
