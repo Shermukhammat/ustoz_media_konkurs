@@ -53,9 +53,12 @@ async def url(update: types.CallbackQuery, state: FSMContext):
 
 async def send_invate_post(update: types.Message, user: User):
     url = f"https://t.me/{db.bot.username}?start={user.id}"
-    share_text = INVATE_POST_TEXT.format(url=url)
+    switcher = types.SwitchInlineQueryChosenChat(query=f'invite_{user.id}', 
+                                                 allow_user_chats=True, 
+                                                 allow_group_chats=True,
+                                                 allow_channel_chats=True)
     markup = types.InlineKeyboardMarkup(inline_keyboard=[
-                                     [types.InlineKeyboardButton(text="Ishtrok etish", url=url)]
+                                     [types.InlineKeyboardButton(text="↪️ Ulashish", switch_inline_query_chosen_chat=switcher)]
                                      ])
     msg = await bot.copy_message(chat_id=user.id,
                                  from_chat_id=db.DATA_CHANEL_ID,
@@ -101,3 +104,33 @@ def get_giveaway_status(needed: int) -> str:
     if needed == 0:
         return "✅ <b>Maxsus sovg‘a yutish imkoniyati sizda mavjud!</b>"
     return f"❗️<b>Maxsus sovg‘ani yutish imkoniyatini qo‘lga kiritish uchun {needed}+ ta odam taklif qilining.</b>"
+
+
+
+from uuid import uuid4
+
+@dp.inline_query()
+async def inline_invite_handler(inline_query: types.InlineQuery):
+    inviter_id = inline_query.from_user.id
+    url = f"https://t.me/{db.bot.username}?start={inviter_id}"
+    caption = "O‘gloy Khurramovaning bonus darslari va sovg‘alarni yutib olish uchun pastdagi tugmani bosing 👇👇👇"
+    photo_file_id = 'AgACAgIAAyEFAATCO-qgAAMJaRhoUn0B1ExH950SaTNiaq1oeyMAAg0OaxuurcFIgXxeXIejbacBAAMCAAN4AAM2BA'
+    photo_url = "https://odilovfarrux.uz/media/admin_uploaded_files/ustoz_media.jpg"
+    result = types.InlineQueryResultArticle(
+    id=uuid4().hex,
+    title="↪️ Postni ulashish uchun posting",
+    thumbnail_url = photo_url,
+    input_message_content=types.InputTextMessageContent(message_text=caption, parse_mode='HTML'),
+    reply_markup=InlineButtons.one_url_button("Ishtrok etish", url)
+    )
+
+    await inline_query.answer(
+        results=[result],
+        cache_time=60,
+        is_personal=True,
+    )
+
+
+@dp.channel_post(F.photo)
+async def show_id(update: types.Message):
+    print(update.photo[-1].file_id)
