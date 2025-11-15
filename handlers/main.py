@@ -118,7 +118,7 @@ async def inline_invite_handler(inline_query: types.InlineQuery):
     photo_url = "https://odilovfarrux.uz/media/admin_uploaded_files/ustoz_media.jpg"
     result = types.InlineQueryResultArticle(
     id=uuid4().hex,
-    title="↪️ Postni ulashish uchun posting",
+    title="↪️ Havolani ulashish uchun bosing",
     thumbnail_url = photo_url,
     input_message_content=types.InputTextMessageContent(message_text=caption, parse_mode='HTML'),
     reply_markup=InlineButtons.one_url_button("Ishtrok etish", url)
