@@ -13,8 +13,8 @@ from db import User
 r = Router(name='main')
 dp.include_router(r)
 register = Semaphore()
-INVATE_POST_TEXT = "Konkursda qatnashish uchun quyidagi havola orqali o'ting 👇👇👇 {url}"
-INVATE_CONTENT = 5
+INVATE_POST_TEXT = "Bonus darslar va Sovgʻalarni yutib olish uchun sizning maxsus xavolangiz 👇👇👇 \n{url}"
+INVATE_CONTENT = 9
 
 @r.message(F.text)
 async def main_message(update: types.Message, state: FSMContext):
@@ -53,11 +53,15 @@ async def url(update: types.CallbackQuery, state: FSMContext):
 
 async def send_invate_post(update: types.Message, user: User):
     url = f"https://t.me/{db.bot.username}?start={user.id}"
+    share_text = INVATE_POST_TEXT.format(url=url)
+    markup = types.InlineKeyboardMarkup(inline_keyboard=[
+                                     [types.InlineKeyboardButton(text="Ishtrok etish", url=url)]
+                                     ])
     msg = await bot.copy_message(chat_id=user.id,
                                  from_chat_id=db.DATA_CHANEL_ID,
                                  message_id=INVATE_CONTENT,
                                  caption=INVATE_POST_TEXT.format(url = url),
-                                 reply_markup=InlineButtons.one_url_button("Ishtrok etish", url))
+                                 reply_markup=markup)
     await bot.send_message(chat_id=user.id,
                            reply_to_message_id=msg.message_id,
                            reply_markup=KeyboardButtons.HOME,
@@ -77,8 +81,7 @@ async def show_points(update: types.Message, user: User):
     bonus_needed = max(0, db.BONUS_POINT - invited)
     gift_needed = max(0, db.GIFT_POINT - invited)
     markup = InlineButtons.one_url_button('📚 Bonus video darslar', db.BONUS_CHANEL_URL) if db.BONUS_POINT <= user.invited_users else KeyboardButtons.HOME
-    TEXT = f"""
-<b>Taklif qilingan do'stlar:</b> {invited}
+    TEXT = f"""Taklif qilingan do'stlaringiz soni {invited} ta
 
 {get_bonus_video_status(bonus_needed)}
 {get_giveaway_status(gift_needed)}
@@ -91,10 +94,10 @@ async def show_points(update: types.Message, user: User):
 
 def get_bonus_video_status(needed: int) -> str:
     if needed == 0:
-        return "✅<b>Bonus video darslar:</b> Qo'lga kiritildi"
-    return f"❗️<b>Bonus video darslar:</b> {needed} ta do'st taklif qiling."
+        return "✅ <b>Bonus darslar qo'lga kiritildi!</b>"
+    return f"❗️<b>Bonus darslarni qo'lga kiritish uchun {needed} ta odam taklif qilining.</b>"
 
 def get_giveaway_status(needed: int) -> str:
     if needed == 0:
-        return "✅<b>Maxsus sovg'a :</b> Ishtirok huquqi mavjud."
-    return f"❗️<b>Maxsus sovg'a :</b>{needed}+ ta do'st taklif qiling."
+        return "✅ <b>Maxsus sovg‘a yutish imkoniyati sizda mavjud!</b>"
+    return f"❗️<b>Maxsus sovg‘ani yutish imkoniyatini qo‘lga kiritish uchun {needed}+ ta odam taklif qilining.</b>"
