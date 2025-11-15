@@ -152,3 +152,9 @@ class UserManger:
                      status=row['status'], 
                      username=row['username'],
                      phone_number=row['phone_number']) for row in rows]
+    
+
+    async def clean_activity(self):
+        async with self.pool.acquire() as conn:
+            conn : Connection
+            await conn.execute("""DELETE FROM activity;""")
