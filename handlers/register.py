@@ -161,6 +161,3 @@ async def get_number(update: types.Message, state: FSMContext):
     user = await db.get_user(update.from_user.id)
     if user.phone_number not in number:
         await db.update_user(update.from_user.id, phone_number=number)
-    
-
-    

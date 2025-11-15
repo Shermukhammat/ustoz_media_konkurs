@@ -134,3 +134,15 @@ async def inline_invite_handler(inline_query: types.InlineQuery):
 @dp.channel_post(F.photo)
 async def show_id(update: types.Message):
     print(update.photo[-1].file_id)
+
+
+from asyncio import sleep
+
+
+@dp.channel_post()
+async def show_id(update: types.Message):
+    if update.text and update.text.startswith('/id'):
+        msg = await update.answer(f"`{update.from_user.id}`", parse_mode='markdown')
+        await sleep(3)
+        await msg.delete()
+        await update.delete()
