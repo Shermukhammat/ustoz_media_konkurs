@@ -98,12 +98,12 @@ async def show_points(update: types.Message, user: User):
 def get_bonus_video_status(needed: int) -> str:
     if needed == 0:
         return "✅ <b>Bonus darslar qo'lga kiritildi!</b>"
-    return f"❗️<b>Bonus darslarni qo'lga kiritish uchun {needed} ta odam taklif qilining.</b>"
+    return f"❗️<b>Bonus darslarni qo'lga kiritish uchun {needed} ta odam taklif qiling.</b>"
 
 def get_giveaway_status(needed: int) -> str:
     if needed == 0:
         return "✅ <b>Maxsus sovg‘a yutish imkoniyati sizda mavjud!</b>"
-    return f"❗️<b>Maxsus sovg‘ani yutish imkoniyatini qo‘lga kiritish uchun {needed}+ ta odam taklif qilining.</b>"
+    return f"❗️<b>Maxsus sovg‘ani yutish imkoniyatini qo‘lga kiritish uchun {needed}+ ta odam taklif qiling.</b>"
 
 
 
