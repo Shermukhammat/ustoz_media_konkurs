@@ -44,6 +44,7 @@ async def get_button(update: types.Message, state: FSMContext):
     text = state_data.get('text')
 
     if update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.get_ads_media)
         await update.answer("Xabaringzni yuboring. (rasm, video, audio, hujjat yoki matn bo'lishi mumkin)", 
                             reply_markup=KeyboardButtons.back())
         return
