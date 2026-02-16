@@ -59,6 +59,10 @@ class InlineButtons:
         [InlineKeyboardButton(text="➕", callback_data='add_admin'), InlineKeyboardButton(text="➖", callback_data='remove_admin')]
     ])
 
+    CHANNELS_BUTTON = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="➕", callback_data='add_channel'), InlineKeyboardButton(text="➖", callback_data='remove_channel')]
+    ])
+
     @staticmethod
     def chanels(chanels: list[dict]) -> InlineKeyboardMarkup:
         if not chanels:

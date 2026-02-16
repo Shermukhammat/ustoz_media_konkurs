@@ -90,3 +90,15 @@ class ParamsDB:
         async with self.paramas_sem:
             self.yaml.update_yaml(self.params_data)
 
+    async def add_channel(self, data: dict):
+        async with self.paramas_sem:
+            self.chanels.append(data)
+            self.params_data['chanels'] = self.chanels
+            self.yaml.update_yaml(self.params_data)
+
+    async def remove_channel(self, channel_id: int):
+        async with self.paramas_sem:
+            self.chanels = [c for c in self.chanels if c.get('id') != channel_id]
+            self.params_data['chanels'] = self.chanels
+            self.yaml.update_yaml(self.params_data)
+

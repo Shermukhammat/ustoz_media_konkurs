@@ -23,3 +23,6 @@ class AdminPanel(StatesGroup):
     remove_admin = State()
     
     settings = State()
+    
+    add_channel = State()
+    remove_channel = State()
