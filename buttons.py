@@ -19,23 +19,25 @@ class KeyboardButtons:
     ], resize_keyboard=True)
 
     ADMIN_PANEL = ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton(text="⬇️ Foydlanuvchilar excel jadvali"), KeyboardButton(text="🚀 Xabar yuborish")],
-        [KeyboardButton(text="👨🏻‍💻 Adminlar"), KeyboardButton(text="📊 Statistika")],
-        [KeyboardButton(text="⚙️ Sozlamalar")],
+        [KeyboardButton(text="⬇️ Foydlanuvchilar excel"), KeyboardButton(text="🚀 Xabar yuborish")],
+        [KeyboardButton(text="👨🏻‍💻 Adminlar"), KeyboardButton(text="📡 Kanallar")],
+        [KeyboardButton(text="📊 Statistika"), KeyboardButton(text="⚙️ Sozlamalar")],
         [KeyboardButton(text="⬅️ Chiqish")]
     ], resize_keyboard=True)
 
     SETTINGS = ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="🔐 Yopiq kanal"), KeyboardButton(text="↩️ Ulashish xabari")],
         [KeyboardButton(text="🏃 Start xabari"), KeyboardButton(text="📕 Bepul darslar xabari")],
-        [KeyboardButton(text="🔗 Taklif havolam xabari")],
+        [KeyboardButton(text="🔗 Taklif havolam xabari"), KeyboardButton(text="📡 Obuna bo'lish xabari")],
+        [KeyboardButton(text="🔢 Odam qo'shish soni")],
         [KeyboardButton(text="⬅️ Orqaga")]
     ], resize_keyboard=True)
 
     def back(skip: bool = False) -> ReplyKeyboardMarkup:
         if skip:
             return ReplyKeyboardMarkup(keyboard=[
-            [KeyboardButton(text="⬅️ Orqaga")],
-            [KeyboardButton(text="➡️ Keyingi")]
+            [KeyboardButton(text="➡️ Keyingi")],
+            [KeyboardButton(text="⬅️ Orqaga")]
         ], resize_keyboard=True)
         return ReplyKeyboardMarkup(keyboard=[
                 [KeyboardButton(text="⬅️ Orqaga")]
@@ -59,6 +61,8 @@ class InlineButtons:
 
     @staticmethod
     def chanels(chanels: list[dict]) -> InlineKeyboardMarkup:
+        if not chanels:
+            chanels = []
         buttons = [
             [InlineKeyboardButton(text=chanel.get('name', 'Kanal'), url=chanel.get('url'))]
             for chanel in chanels

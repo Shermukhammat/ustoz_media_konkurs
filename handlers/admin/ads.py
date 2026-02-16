@@ -16,7 +16,7 @@ from aiogram.enums import ContentType
 @r.message(AdminPanel.get_ads_media)
 async def get_ads_media(update: types.Message, state: FSMContext):
     if update.text == "⬅️ Orqaga":
-        await state.clear()
+        await state.set_state(AdminPanel.get_ads_media)
         await update.answer("Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
         return
     

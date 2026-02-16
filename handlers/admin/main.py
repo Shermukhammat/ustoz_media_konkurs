@@ -61,7 +61,7 @@ async def admin_panel_main(update: types.Message, state: FSMContext):
             text += f"\n{index+1}. {admin.full_name} \n🆔: <code>{admin.id}</code>"
         await update.answer(text, parse_mode='HTML', reply_markup=InlineButtons.ADMINS_BUTTON)
 
-    elif update.text == "⬇️ Foydlanuvchilar excel jadvali":
+    elif update.text == "⬇️ Foydlanuvchilar excel":
         await send_users_doc(update)
     
     elif update.text == "🚀 Xabar yuborish":

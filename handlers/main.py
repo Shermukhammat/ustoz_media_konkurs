@@ -22,7 +22,7 @@ async def main_message(update: types.Message, state: FSMContext):
     if not user:
         return await start_registring(update, state)
     
-    if update.text == "👥 Taklif qilgan do'stlarim":
+    if update.text == "📊 Ballarim":
         await show_points(update, user)
     
     elif update.text == "🔗 Taklif havolam":
