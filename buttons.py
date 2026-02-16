@@ -13,14 +13,22 @@ class KeyboardButtons:
         ], resize_keyboard=True, one_time_keyboard=True)
     
     HOME = ReplyKeyboardMarkup(keyboard=[
-        [KeyboardButton(text="🔗 Maxsus havolam"), KeyboardButton(text="👥 Taklif qilgan do'stlarim")],
-        [KeyboardButton(text="📱 Telefon raqamim"), KeyboardButton(text="📖 Yordam")]
+        [KeyboardButton(text="🔗 Taklif havolam")],
+        [KeyboardButton(text="📕 Bepul darslar haqida"), KeyboardButton(text="📊 Ballarim")],
+        [KeyboardButton(text="📱 Telefon raqamim")]
     ], resize_keyboard=True)
 
     ADMIN_PANEL = ReplyKeyboardMarkup(keyboard=[
         [KeyboardButton(text="⬇️ Foydlanuvchilar excel jadvali"), KeyboardButton(text="🚀 Xabar yuborish")],
         [KeyboardButton(text="👨🏻‍💻 Adminlar"), KeyboardButton(text="📊 Statistika")],
+        [KeyboardButton(text="⚙️ Sozlamalar")],
         [KeyboardButton(text="⬅️ Chiqish")]
+    ], resize_keyboard=True)
+
+    SETTINGS = ReplyKeyboardMarkup(keyboard=[
+        [KeyboardButton(text="🏃 Start xabari"), KeyboardButton(text="📕 Bepul darslar xabari")],
+        [KeyboardButton(text="🔗 Taklif havolam xabari")],
+        [KeyboardButton(text="⬅️ Orqaga")]
     ], resize_keyboard=True)
 
     def back(skip: bool = False) -> ReplyKeyboardMarkup:
@@ -43,7 +51,7 @@ class KeyboardButtons:
 
 class InlineButtons:
     HOME = InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🔗 Maxsus havolam", callback_data="url")]
+        [InlineKeyboardButton(text="🔗 Taklif havolam", callback_data="url")]
     ])
     ADMINS_BUTTON = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="➕", callback_data='add_admin'), InlineKeyboardButton(text="➖", callback_data='remove_admin')]

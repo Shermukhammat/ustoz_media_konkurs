@@ -1,0 +1,21 @@
+token : "12345:i4udfnfd"
+data_chanel_id : -12345
+dev_id: 1234
+
+database:
+  user: user 
+  database: db
+  password: passowrd
+  host: localhost
+  port: 5432
+
+chanels:
+  - id: -12345
+    username:  null
+    name: "Channel"
+    url: "https://t.me/blah"
+
+bonus_chanel_id: -1002926963832
+bonus_chanel_url: "https://t.me/+G8bY_5VEpTgzMzFi"
+bonus_point: 5
+gift_point: 10

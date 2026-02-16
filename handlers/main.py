@@ -14,7 +14,7 @@ r = Router(name='main')
 dp.include_router(r)
 register = Semaphore()
 INVATE_POST_TEXT = "Bonus darslar va Sovgʻalarni yutib olish uchun sizning maxsus xavolangiz 👇👇👇 \n{url}"
-INVATE_CONTENT = 9
+INVATE_CONTENT = 36
 
 @r.message(F.text)
 async def main_message(update: types.Message, state: FSMContext):
@@ -25,10 +25,10 @@ async def main_message(update: types.Message, state: FSMContext):
     if update.text == "👥 Taklif qilgan do'stlarim":
         await show_points(update, user)
     
-    elif update.text == "🔗 Maxsus havolam":
+    elif update.text == "🔗 Taklif havolam":
         await send_invate_post(update, user)
 
-    elif update.text == "📖 Yordam":
+    elif update.text == "📕 Bepul darslar haqida":
         await update.answer(MAIN_MESSAGE.format(name=user.first_name, bot=db.bot.full_name, bonus=db.BONUS_POINT, gift=db.GIFT_POINT), reply_markup=InlineButtons.HOME)   
     
     elif update.text == "📱 Telefon raqamim":

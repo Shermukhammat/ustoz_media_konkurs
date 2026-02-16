@@ -21,3 +21,5 @@ class AdminPanel(StatesGroup):
 
     add_admin = State()
     remove_admin = State()
+    
+    settings = State()

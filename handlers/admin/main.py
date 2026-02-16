@@ -69,6 +69,10 @@ async def admin_panel_main(update: types.Message, state: FSMContext):
         await update.answer("1ta mediadan tashkil topgan xabaringizni yuboring. Rasm, video, fayl, video yoki audio xabar. Agar foydlnuvchi ismni postga qoymoqchi bolsanigz {name} deb yozing", 
                             reply_markup=KeyboardButtons.back())
 
+    elif update.text == "⚙️ Sozlamalar":
+        await state.set_state(AdminPanel.settings)
+        await update.answer("Sozlamalar bo'limi", reply_markup=KeyboardButtons.SETTINGS)
+    
     else:
         await update.answer("👨🏻‍💻 Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
     
@@ -161,3 +165,12 @@ async def remove_admin(update: types.Message, state: FSMContext):
 # @r.message(F.sticker)
 # async def sticker(update: types.Message):
 #     print(update.sticker.file_id)
+
+@r.message(AdminPanel.settings, F.text)
+async def admin_panel_settings(update: types.Message, state: FSMContext):
+    if update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.main)
+        await update.answer("Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
+    
+    else:
+        await update.answer("Tez orada...", reply_markup=KeyboardButtons.SETTINGS)
