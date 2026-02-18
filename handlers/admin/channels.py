@@ -70,7 +70,6 @@ async def add_channel_handler(update: types.Message, state: FSMContext):
         # Create invite link
         invite_link = await bot.create_chat_invite_link(
             chat_id=chat.id,
-            creates_join_request=True,
             name="Bot Invite Link"
         )
 

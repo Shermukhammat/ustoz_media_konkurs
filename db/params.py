@@ -64,6 +64,21 @@ class DatabseConfig:
         self.host = data.get('host', 'localhost')
 
 
+class SavedMessage:        
+    def __init__(self, data : dict):
+        self.message_id : int = data.get('message_id')
+        self.caption : str = data.get('caption')
+        self.parser_mode : str = data.get('parser_mode')
+    
+    @property
+    def data(self) -> dict:
+        return {
+            'message_id' : self.message_id,
+            'caption' : self.caption,
+            'parser_mode' : self.parser_mode
+        }
+
+
 class ParamsDB:
     def __init__(self, config_path : str) -> None:
         self.yaml = UGUtils(config_path)
@@ -79,7 +94,13 @@ class ParamsDB:
         self.BONUS_CHANEL_URL = self.params_data.get('bonus_chanel_url', 'https://t.me/+JnmQJIWlgTw2YzAy')
         self.BONUS_POINT = self.params_data.get('bonus_point', 1)
         self.GIFT_POINT = self.params_data.get('gift_point', 2)
+
+        self.SUBSCRIBE_MESSAGE = self.params_data.get('subscribe_message', "Ko'nkursda qatnaish uchun pastdagi tugmani bosing 👇👇👇")
+        self.SHARE_MESSAGE = SavedMessage(self.params_data.get('share_message', {}))
+        self.ABOUT_LESSONS_MESSAGE = SavedMessage(self.params_data.get('about_lessons_message', {}))        
+        self.START_MESSAGE = SavedMessage(self.params_data.get('start_message', {}))
         
+
         self.paramas_sem = Semaphore()
 
     @property

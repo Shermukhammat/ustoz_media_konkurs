@@ -28,7 +28,7 @@ class KeyboardButtons:
     SETTINGS = ReplyKeyboardMarkup(keyboard=[
         [KeyboardButton(text="🔐 Yopiq kanal"), KeyboardButton(text="↩️ Ulashish xabari")],
         [KeyboardButton(text="🏃 Start xabari"), KeyboardButton(text="📕 Bepul darslar xabari")],
-        [KeyboardButton(text="🔗 Taklif havolam xabari"), KeyboardButton(text="📡 Obuna bo'lish xabari")],
+        [KeyboardButton(text="🔗 Taklif havolam xabari")],
         [KeyboardButton(text="🔢 Odam qo'shish soni")],
         [KeyboardButton(text="⬅️ Orqaga")]
     ], resize_keyboard=True)

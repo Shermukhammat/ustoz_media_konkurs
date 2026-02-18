@@ -113,9 +113,11 @@ from uuid import uuid4
 async def inline_invite_handler(inline_query: types.InlineQuery):
     inviter_id = inline_query.from_user.id
     url = f"https://t.me/{db.bot.username}?start={inviter_id}"
-    caption = "O‘gloy Khurramovaning bonus darslari va sovg‘alarni yutib olish uchun pastdagi tugmani bosing 👇👇👇"
-    photo_file_id = 'AgACAgIAAyEFAATCO-qgAAMJaRhoUn0B1ExH950SaTNiaq1oeyMAAg0OaxuurcFIgXxeXIejbacBAAMCAAN4AAM2BA'
-    photo_url = "https://odilovfarrux.uz/media/admin_uploaded_files/ustoz_media.jpg"
+    photo_url = "https://odilovfarrux.uz/media/admin_uploaded_files/f6de53182a1c43ed9118acedf675b550.png"
+    caption = (
+        f'<a href="{photo_url}">\u200b</a>'
+        "Ko'nkursda qatnaish uchun pastdagi tugmani bosing 👇👇👇"
+    )
     result = types.InlineQueryResultArticle(
     id=uuid4().hex,
     title="↪️ Havolani ulashish uchun bosing",
