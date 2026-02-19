@@ -70,8 +70,7 @@ class SavedMessage:
         self.message_id : int = data.get('message_id')
         self.caption : str = data.get('caption')
         self.text: str = data.get('text')
-        # stored as 'content_type' by _extract_message_data; fall back to 'type' for old data
-        self.content_type: str = data.get('content_type') or data.get('type')
+        self.content_type: str = data.get('content_type')
         self.file_id: str = data.get('file_id')
         self.parse_mode: str = data.get('parse_mode')
 

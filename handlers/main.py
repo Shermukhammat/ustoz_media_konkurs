@@ -28,7 +28,17 @@ async def main_message(update: types.Message, state: FSMContext):
         await send_invate_post(update, user)
 
     elif update.text == "📕 Bepul darslar haqida":
-        await update.answer(MAIN_MESSAGE.format(name=user.first_name, bot=db.bot.full_name, bonus=db.BONUS_POINT, gift=db.GIFT_POINT), reply_markup=InlineButtons.HOME)   
+        from handlers.admin.settings import send_saved_message
+        about = context.ABOUT_LESSONS_MESSAGE
+        if about.exists:
+            await send_saved_message(
+                chat_id=user.id,
+                saved=about,
+                reply_markup=InlineButtons.HOME,
+                template_kwargs={'name': user.first_name}
+            )
+        else:
+            await update.answer("❌ Xabar qo'shilmagan", reply_markup=InlineButtons.HOME)
     
     elif update.text == "📱 Telefon raqamim":
         await update.answer(
@@ -88,18 +98,7 @@ async def update_number(update: types.CallbackQuery, state: FSMContext):
 async def show_points(update: types.Message, user: User):
     invited = user.invited_users
     bonus_needed = max(0, db.BONUS_POINT - invited)
-    gift_needed = max(0, db.GIFT_POINT - invited)
-    markup = InlineButtons.one_url_button('📚 Bonus video darslar', db.BONUS_CHANEL_URL) if db.BONUS_POINT <= user.invited_users else KeyboardButtons.HOME
-    TEXT = f"""Taklif qilingan do'stlaringiz soni {invited} ta
-
-{get_bonus_video_status(bonus_needed)}
-{get_giveaway_status(gift_needed)}
-"""
-    await update.answer(
-        TEXT.strip(),
-        reply_markup=markup,
-        parse_mode="HTML",
-    )
+    await update.answer(f"Taklif qilingan do'stlaringiz soni {invited} ta", reply_markup=KeyboardButtons.HOME)
 
 def get_bonus_video_status(needed: int) -> str:
     if needed == 0:
@@ -138,10 +137,6 @@ async def inline_invite_handler(inline_query: types.InlineQuery):
         is_personal=True,
     )
 
-
-@dp.channel_post(F.photo)
-async def show_id(update: types.Message):
-    print(update.photo[-1].file_id)
 
 
 from asyncio import sleep

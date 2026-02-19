@@ -95,21 +95,18 @@ async def show_share_message(update: types.Message, state: FSMContext):
     share = context.SHARE_MESSAGE
 
     if share.exists:
-        try:
-            await send_saved_message(
+        await send_saved_message(
                 chat_id=update.from_user.id,
                 saved=share,
                 reply_markup=InlineButtons.CHANGE_SHARE_MESSAGE,
-                template_kwargs={'url': 'https://example.com'}   # preview placeholder
+                template_kwargs={}
             )
-            return
-        except Exception:
-            pass
-
-    await update.answer(
-        "❌ Taklif havolasi xabari qo'shilmagan.",
-        reply_markup=InlineButtons.CHANGE_SHARE_MESSAGE
-    )
+    
+    else:
+        await update.answer(
+            "❌ Taklif havolasi xabari qo'shilmagan.",
+            reply_markup=InlineButtons.CHANGE_SHARE_MESSAGE
+        )
 
 
 # ─── "Change" inline button ───────────────────────────────────────────────────
@@ -160,6 +157,76 @@ async def set_share_message_handler(update: types.Message, state: FSMContext):
         await state.set_state(AdminPanel.settings)
         await update.answer(
             "✅ Taklif havolam xabari saqlandi!",
+            reply_markup=KeyboardButtons.SETTINGS
+        )
+    except Exception as e:
+        await update.answer(
+            f"❗️ Xatolik yuz berdi: {e}",
+            reply_markup=KeyboardButtons.back()
+        )
+
+
+# ─── Show current "Bepul darslar" message ─────────────────────────────────────
+
+@r.message(AdminPanel.settings, F.text == "📕 Bepul darslar xabari")
+async def show_about_lessons_message(update: types.Message, state: FSMContext):
+    msg = context.ABOUT_LESSONS_MESSAGE
+
+    if msg.exists:
+        await send_saved_message(
+            chat_id=update.from_user.id,
+            saved=msg,
+            reply_markup=InlineButtons.CHANGE_ABOUT_LESSONS_MESSAGE,
+            template_kwargs={}
+        )
+    else:
+        await update.answer(
+            "❌ Bepul darslar xabari qo'shilmagan.",
+            reply_markup=InlineButtons.CHANGE_ABOUT_LESSONS_MESSAGE
+        )
+
+
+# ─── "Change" inline button ───────────────────────────────────────────────────
+
+@r.callback_query(AdminPanel.settings, F.data == 'change_about_lessons_message')
+async def change_about_lessons_message_callback(update: types.CallbackQuery, state: FSMContext):
+    await state.set_state(AdminPanel.set_about_lessons_message)
+    await update.answer()
+    await update.message.answer(
+        "📨 Yangi xabarni yuboring.\n"
+        "Rasm, video, matn yoki boshqa turdagi xabar bo'lishi mumkin.\n\n"
+        "💡 Foydalanuvchi ismi uchun <code>{name}</code> yozing.",
+        parse_mode='HTML',
+        reply_markup=KeyboardButtons.back()
+    )
+
+
+# ─── Receive new "Bepul darslar" message ──────────────────────────────────────
+
+@r.message(AdminPanel.set_about_lessons_message)
+async def set_about_lessons_message_handler(update: types.Message, state: FSMContext):
+    if update.content_type == ContentType.TEXT and update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.settings)
+        await update.answer("Sozlamalar bo'limi", reply_markup=KeyboardButtons.SETTINGS)
+        return
+
+    if update.content_type not in SUPPORTED_TYPES:
+        await update.answer(
+            "❗️ Ushbu turdagi xabar qo'llab-quvvatlanmaydi.\n"
+            "Rasm, video, matn, hujjat, ovozli xabar yoki doiraviy video yuboring.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    try:
+        from db.params import SavedMessage
+        data = _extract_message_data(update)
+        saved = SavedMessage(data)
+        await context.update_save_message('about_lessons_message', saved)
+        context.ABOUT_LESSONS_MESSAGE = saved      # update in-memory reference
+        await state.set_state(AdminPanel.settings)
+        await update.answer(
+            "✅ Bepul darslar xabari saqlandi!",
             reply_markup=KeyboardButtons.SETTINGS
         )
     except Exception as e:

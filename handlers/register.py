@@ -1,4 +1,4 @@
-from loader import db, dp, bot
+from loader import db, dp, bot, context
 from aiogram import Router, types, F 
 from aiogram.filters import CommandStart, CommandObject, StateFilter
 from asyncio import Semaphore
@@ -90,7 +90,17 @@ async def register_user(update: types.Message, invater: User, number: str):
             await db.update_user(i.id, invited_users = i.invited_users)
     
     await update.answer(f"{update.from_user.first_name} siz konkursimiz ishtrokchisiz!", reply_markup=KeyboardButtons.HOME)
-    await update.answer(MAIN_MESSAGE, reply_markup=InlineButtons.HOME)
+    from handlers.admin.settings import send_saved_message
+    about = context.ABOUT_LESSONS_MESSAGE
+    if about.exists:
+        await send_saved_message(
+            chat_id=user.id,
+            saved=about,
+            reply_markup=InlineButtons.HOME,
+            template_kwargs={'name': user.first_name}
+        )
+    else:
+        await update.answer("❌ Xabar qo'shilmagan", reply_markup=InlineButtons.HOME)
 
     if invater:
         await reward_invater(i, user)

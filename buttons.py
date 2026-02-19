@@ -67,6 +67,10 @@ class InlineButtons:
         [InlineKeyboardButton(text="✏️ O'zgartirish", callback_data='change_share_message')]
     ])
 
+    CHANGE_ABOUT_LESSONS_MESSAGE = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✏️ O'zgartirish", callback_data='change_about_lessons_message')]
+    ])
+
     @staticmethod
     def chanels(chanels: list[dict]) -> InlineKeyboardMarkup:
         if not chanels:
