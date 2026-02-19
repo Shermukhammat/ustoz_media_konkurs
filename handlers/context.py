@@ -2,7 +2,7 @@ from states import RegisterStates
 from aiogram import types
 from aiogram.fsm.context import FSMContext
 from buttons import InlineButtons
-from loader import db 
+from loader import db, context
 from db import User
 
 
@@ -13,12 +13,7 @@ Siz bilan bog‘lanishimiz uchun quyidagi “📲 Telefon raqamimni yuborish” 
 """
 
 
-WELCOME_MESSAGE = """Assalomu alaykum {name}! O‘g‘loy Khurramovaning konkurs botiga xush kelibsiz! 🎉 
-Konkursga qatnashish uchun pastda so’ralgan ma’lumotlarni yuboring va aytilgan amallarni bajaring.
-
-Qani kettik!!!
-
-Birinchi navbatda kanalimzga qo'shiling va ✅ А'zo boʼldim tugmasini bosing"""
+WELCOME_MESSAGE = "Start xabari yuklanmagan"
 
 MAIN_MESSAGE = """❓ Tanishlarni qanday qo’shish kerak va Ballar qanday hisoblanadi 
 👥Sizga berilgan link orqali kanalga qo'shilgan do’stlaringiz uchun beriladi
@@ -38,10 +33,22 @@ Do‘stlarni taklif qilish uchun maxsus linkingizni "🔗 Maxsus havolam" tugmas
 Nechta do'stingiz qo'shilganini bilish uchun "👥 Taklif qilgan do'stlarim" tugmasini bosing"""
 
 
-async def start_registring(update: types.Message, state: FSMContext, invater : User = None):
+async def start_registring(update: types.Message, state: FSMContext, invater: User = None):
+    from handlers.admin.settings import send_saved_message
     await state.set_state(RegisterStates.check_sub)
     if invater:
-        await state.update_data(invater = invater)
-    
-    await update.answer(WELCOME_MESSAGE.format(name=update.from_user.first_name), 
-                        reply_markup=InlineButtons.chanels(db.chanels))
+        await state.update_data(invater=invater)
+
+    start = context.START_MESSAGE
+    if start.exists:
+        await send_saved_message(
+            chat_id=update.from_user.id,
+            saved=start,
+            reply_markup=InlineButtons.chanels(db.chanels),
+            template_kwargs={'name': update.from_user.first_name}
+        )
+    else:
+        await update.answer(
+            WELCOME_MESSAGE.format(name=update.from_user.first_name),
+            reply_markup=InlineButtons.chanels(db.chanels)
+        )

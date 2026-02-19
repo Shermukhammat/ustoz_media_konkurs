@@ -27,9 +27,8 @@ class KeyboardButtons:
 
     SETTINGS = ReplyKeyboardMarkup(keyboard=[
         [KeyboardButton(text="🔐 Yopiq kanal"), KeyboardButton(text="↩️ Ulashish xabari")],
-        [KeyboardButton(text="🏃 Start xabari"), KeyboardButton(text="📕 Bepul darslar xabari")],
-        [KeyboardButton(text="🔗 Taklif havolam xabari")],
-        [KeyboardButton(text="🔢 Odam qo'shish soni")],
+        [KeyboardButton(text="🔗 Taklif havolam xabari"), KeyboardButton(text="📕 Bepul darslar xabari")],
+        [KeyboardButton(text="🏃 Start xabari"), KeyboardButton(text="🔢 Odam qo'shish soni")],
         [KeyboardButton(text="⬅️ Orqaga")]
     ], resize_keyboard=True)
 
@@ -69,6 +68,10 @@ class InlineButtons:
 
     CHANGE_ABOUT_LESSONS_MESSAGE = InlineKeyboardMarkup(inline_keyboard=[
         [InlineKeyboardButton(text="✏️ O'zgartirish", callback_data='change_about_lessons_message')]
+    ])
+
+    CHANGE_START_MESSAGE = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✏️ O'zgartirish", callback_data='change_start_message')]
     ])
 
     @staticmethod
