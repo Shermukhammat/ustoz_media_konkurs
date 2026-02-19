@@ -63,6 +63,10 @@ class InlineButtons:
         [InlineKeyboardButton(text="➕", callback_data='add_channel'), InlineKeyboardButton(text="➖", callback_data='remove_channel')]
     ])
 
+    CHANGE_SHARE_MESSAGE = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="✏️ O'zgartirish", callback_data='change_share_message')]
+    ])
+
     @staticmethod
     def chanels(chanels: list[dict]) -> InlineKeyboardMarkup:
         if not chanels:

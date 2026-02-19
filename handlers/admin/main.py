@@ -166,11 +166,3 @@ async def remove_admin(update: types.Message, state: FSMContext):
 # async def sticker(update: types.Message):
 #     print(update.sticker.file_id)
 
-@r.message(AdminPanel.settings, F.text)
-async def admin_panel_settings(update: types.Message, state: FSMContext):
-    if update.text == "⬅️ Orqaga":
-        await state.set_state(AdminPanel.main)
-        await update.answer("Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
-    
-    else:
-        await update.answer("Tez orada...", reply_markup=KeyboardButtons.SETTINGS)

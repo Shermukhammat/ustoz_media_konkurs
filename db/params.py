@@ -2,6 +2,7 @@ import yaml, os
 from ruamel.yaml import YAML
 from uuid import uuid4
 from asyncio import Semaphore
+import os
 
 class ConfigurationYaml:
     def __init__(
@@ -68,19 +69,34 @@ class SavedMessage:
     def __init__(self, data : dict):
         self.message_id : int = data.get('message_id')
         self.caption : str = data.get('caption')
-        self.parser_mode : str = data.get('parser_mode')
-    
+        self.text: str = data.get('text')
+        # stored as 'content_type' by _extract_message_data; fall back to 'type' for old data
+        self.content_type: str = data.get('content_type') or data.get('type')
+        self.file_id: str = data.get('file_id')
+        self.parse_mode: str = data.get('parse_mode')
+
+    @property
+    def exists(self) -> bool:
+        """True if a message has actually been saved (content_type was set)."""
+        return bool(self.content_type)
+
     @property
     def data(self) -> dict:
         return {
+            'content_type' : self.content_type,
             'message_id' : self.message_id,
             'caption' : self.caption,
-            'parser_mode' : self.parser_mode
+            'text' : self.text,
+            'file_id' : self.file_id,
+            'parse_mode' : self.parse_mode
         }
 
 
 class ParamsDB:
     def __init__(self, config_path : str) -> None:
+        if not os.path.exists(config_path):
+            os.makedirs(os.path.dirname(config_path), exist_ok=True)
+        
         self.yaml = UGUtils(config_path)
         self.params_data = self.yaml.get_yaml()
     
@@ -123,3 +139,7 @@ class ParamsDB:
             self.params_data['chanels'] = self.chanels
             self.yaml.update_yaml(self.params_data)
 
+    async def update_save_message(self, key: str, save_message: SavedMessage):
+        async with self.paramas_sem:
+            self.params_data[key] = save_message.data
+            self.yaml.update_yaml(self.params_data)

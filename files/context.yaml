@@ -1,0 +1,8 @@
+share_message:
+  content_type: video
+  message_id:
+  caption: Salom {name} bu havola -> {url}
+  text:
+  file_id: 
+    BAACAgIAAxkBAAI_NmmWZsbWd4JTh3KJ06ha4WivacvgAAL7oAACPsiwSD09CDlXPcpgOgQ
+  parse_mode:

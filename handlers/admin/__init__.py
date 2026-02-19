@@ -1,1 +1,2 @@
-from . import channels, main, ads
+from . import channels, ads, settings
+from . import main

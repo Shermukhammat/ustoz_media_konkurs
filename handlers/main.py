@@ -1,4 +1,4 @@
-from loader import db, dp, bot
+from loader import db, dp, bot, context
 from aiogram import Router, types, F 
 from aiogram.filters import CommandStart
 from asyncio import Semaphore
@@ -14,7 +14,6 @@ r = Router(name='main')
 dp.include_router(r)
 register = Semaphore()
 INVATE_POST_TEXT = "Bonus darslar va Sovgʻalarni yutib olish uchun sizning maxsus xavolangiz 👇👇👇 \n{url}"
-INVATE_CONTENT = 36
 
 @r.message(F.text)
 async def main_message(update: types.Message, state: FSMContext):
@@ -52,6 +51,7 @@ async def url(update: types.CallbackQuery, state: FSMContext):
 
 
 async def send_invate_post(update: types.Message, user: User):
+    from handlers.admin.settings import send_saved_message
     url = f"https://t.me/{db.bot.username}?start={user.id}"
     switcher = types.SwitchInlineQueryChosenChat(query=f'invite_{user.id}', 
                                                  allow_user_chats=True, 
@@ -60,15 +60,21 @@ async def send_invate_post(update: types.Message, user: User):
     markup = types.InlineKeyboardMarkup(inline_keyboard=[
                                      [types.InlineKeyboardButton(text="↪️ Ulashish", switch_inline_query_chosen_chat=switcher)]
                                      ])
-    msg = await bot.copy_message(chat_id=user.id,
-                                 from_chat_id=db.DATA_CHANEL_ID,
-                                 message_id=INVATE_CONTENT,
-                                 caption=INVATE_POST_TEXT.format(url = url),
-                                 reply_markup=markup)
-    await bot.send_message(chat_id=user.id,
-                           reply_to_message_id=msg.message_id,
-                           reply_markup=KeyboardButtons.HOME,
-                           text="👆👆👆 Bu postda sizning shaxsiy linkingiz joylashgan \n\nYuqoridagi postni yaqinlaringizga tarqating, ular sizning linkingizni bosib botga start berishi va telegram kanalga obuna bo’lishi kerak.")
+    share = context.SHARE_MESSAGE
+    if share and share.content_type:
+        await send_saved_message(
+            chat_id=user.id,
+            saved=share,
+            reply_markup=markup,
+            template_kwargs={'url': url, 'name': user.first_name}
+        )
+    else:
+        # Fallback: plain text with link
+        await bot.send_message(
+            chat_id=user.id,
+            text=INVATE_POST_TEXT.format(url=url),
+            reply_markup=markup
+        )
 
 
 
