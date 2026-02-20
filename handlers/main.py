@@ -97,7 +97,7 @@ async def update_number(update: types.CallbackQuery, state: FSMContext):
 
 async def show_points(update: types.Message, user: User):
     invited = user.invited_users
-    bonus_needed = max(0, db.BONUS_POINT - invited)
+    bonus_needed = max(0, db.NEED_INVATE_PEOPLE - invited)
     await update.answer(f"Taklif qilingan do'stlaringiz soni {invited} ta", reply_markup=KeyboardButtons.HOME)
 
 def get_bonus_video_status(needed: int) -> str:
@@ -142,7 +142,7 @@ async def inline_invite_handler(inline_query: types.InlineQuery):
 from asyncio import sleep
 
 
-@dp.channel_post()
+@dp.channel_post(F.text)
 async def show_id(update: types.Message):
     if update.text and update.text.startswith('/id'):
         msg = await update.answer(f"`{update.from_user.id}`", parse_mode='markdown')

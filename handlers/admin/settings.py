@@ -310,6 +310,115 @@ async def set_start_message_handler(update: types.Message, state: FSMContext):
         )
 
 
+# ─── Show private channel info ────────────────────────────────────────────────
+
+@r.message(AdminPanel.settings, F.text == "🔐 Yopiq kanal")
+async def show_private_channel(update: types.Message, state: FSMContext):
+    ch_id = db.PRIVATE_CHANNEL_ID
+    ch_url = db.PRIVATE_CHANNEL_URL
+
+    if ch_id:
+        text = (
+            f"🔐 <b>Yopiq kanal ma'lumotlari:</b>\n\n"
+            f"🆔 ID: <code>{ch_id}</code>\n"
+        )
+        if ch_url:
+            text += f"🔗 Havola: {ch_url}"
+        else:
+            text += "🔗 Havola: <i>mavjud emas</i>"
+    else:
+        text = "❌ Yopiq kanal qo'shilmagan."
+
+    await update.answer(
+        text,
+        parse_mode='HTML',
+        reply_markup=InlineButtons.CHANGE_PRIVATE_CHANNEL
+    )
+
+
+# ─── "Change channel" inline callback ─────────────────────────────────────────
+
+@r.callback_query(AdminPanel.settings, F.data == 'change_private_channel')
+async def change_private_channel_callback(update: types.CallbackQuery, state: FSMContext):
+    await state.set_state(AdminPanel.set_private_channel)
+    await update.answer()
+    await update.message.answer(
+        "📡 Yangi yopiq kanal ID sini yuboring.\n\n"
+        "Bot o'sha kanalga <b>admin</b> bo'lishi kerak.\n"
+        "Kanal ID odatda manfiy son ko'rinishida bo'ladi, masalan: <code>-1001234567890</code>",
+        parse_mode='HTML',
+        reply_markup=KeyboardButtons.back()
+    )
+
+
+# ─── Receive new private channel ID ───────────────────────────────────────────
+
+@r.message(AdminPanel.set_private_channel)
+async def set_private_channel_handler(update: types.Message, state: FSMContext):
+    # Back button
+    if update.content_type == ContentType.TEXT and update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.settings)
+        await update.answer("Sozlamalar bo'limi", reply_markup=KeyboardButtons.SETTINGS)
+        return
+
+    if update.content_type != ContentType.TEXT:
+        await update.answer(
+            "❗️ Iltimos, kanal ID sini raqam ko'rinishida yuboring.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    raw = update.text.strip()
+    try:
+        channel_id = int(raw)
+    except ValueError:
+        await update.answer(
+            "❗️ Noto'g'ri format. Kanal ID raqam bo'lishi kerak, "
+            "masalan: <code>-1001234567890</code>",
+            parse_mode='HTML',
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    try:
+        chat = await bot.get_chat(channel_id)
+        bot_member = await bot.get_chat_member(channel_id, (await bot.me()).id)
+
+        if bot_member.status not in ('administrator', 'creator'):
+            await update.answer(
+                "❗️ Bot ushbu kanalda admin emas. "
+                "Botni kanalga admin qilib qo'shing va qayta urinib ko'ring.",
+                reply_markup=KeyboardButtons.back()
+            )
+            return
+
+        # Create a join-request invite link
+        invite = await bot.create_chat_invite_link(
+            channel_id,
+            creates_join_request=True
+        )
+        invite_url = invite.invite_link
+
+        await db.update_private_channel(channel_id, invite_url)
+
+        await state.set_state(AdminPanel.settings)
+        await update.answer(
+            f"✅ Yopiq kanal muvaffaqiyatli saqlandi!\n\n"
+            f"🆔 ID: <code>{channel_id}</code>\n"
+            f"🔗 Havola: {invite_url}",
+            parse_mode='HTML',
+            reply_markup=KeyboardButtons.SETTINGS
+        )
+
+    except Exception as e:
+        await update.answer(
+            f"❗️ Xatolik yuz berdi: kanal topilmadi yoki bot unga kirish huquqiga ega emas.\n"
+            f"<i>{e}</i>",
+            parse_mode='HTML',
+            reply_markup=KeyboardButtons.back()
+        )
+
+
 # ─── Settings: Back to admin panel & catch-all ────────────────────────────────
 
 @r.message(AdminPanel.settings, F.text == "⬅️ Orqaga")

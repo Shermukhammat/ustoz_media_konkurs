@@ -105,9 +105,9 @@ class ParamsDB:
         self.dev_id : int = self.params_data.get('dev_id')
         self.chanels : list[dict] = self.params_data.get('chanels', [])
         self.welcome_message : str = self.params_data.get('welcome_media')
-        self.BONUS_CHNNAEL_ID = self.params_data.get('bonus_chanel_id', -1002598868618)
-        self.BONUS_CHANEL_URL = self.params_data.get('bonus_chanel_url', 'https://t.me/+JnmQJIWlgTw2YzAy')
-        self.BONUS_POINT = self.params_data.get('bonus_point', 1)
+        self.PRIVATE_CHANNEL_ID = self.params_data.get('private_channel_id')
+        self.PRIVATE_CHANNEL_URL = self.params_data.get('private_channel_url')
+        self.NEED_INVATE_PEOPLE = self.params_data.get('need_invate_people', 1)
         self.GIFT_POINT = self.params_data.get('gift_point', 2)
 
         self.SUBSCRIBE_MESSAGE = self.params_data.get('subscribe_message', "Ko'nkursda qatnaish uchun pastdagi tugmani bosing 👇👇👇")
@@ -141,4 +141,12 @@ class ParamsDB:
     async def update_save_message(self, key: str, save_message: SavedMessage):
         async with self.paramas_sem:
             self.params_data[key] = save_message.data
+            self.yaml.update_yaml(self.params_data)
+
+    async def update_private_channel(self, channel_id: int, url: str):
+        async with self.paramas_sem:
+            self.PRIVATE_CHANNEL_ID = channel_id
+            self.PRIVATE_CHANNEL_URL = url
+            self.params_data['private_channel_id'] = channel_id
+            self.params_data['private_channel_url'] = url
             self.yaml.update_yaml(self.params_data)
