@@ -1,6 +1,6 @@
 from loader import db, dp, bot
 from aiogram import Router, types, F 
-from aiogram.filters import CommandStart, CommandObject, StateFilter
+from aiogram.filters import CommandStart, CommandObject, StateFilter, Command
 from asyncio import Semaphore
 from states import UserStates, RegisterStates
 from aiogram.fsm.context import FSMContext
@@ -52,3 +52,19 @@ async def delete_callback(update: types.CallbackQuery):
         await update.message.edit_reply_markup(reply_markup=None)
 
 
+@r.message(Command('delete_me'), StateFilter(any_state))
+async def command_delete_me(update: types.Message, state: FSMContext):
+    user = await db.get_user(update.from_user.id)
+    if user:
+        await db.remove_user(update.from_user.id)
+        await state.clear()
+        await update.answer(
+            "🗑 Hisobingiz o'chirildi.\n"
+            "Botdan qayta foydalanish uchun /start buyrug'ini yuboring."
+        )
+    else:
+        await state.clear()
+        await update.answer(
+            "❌ Siz ro'yxatdan o'tmagan ekansiz.\n"
+            "Botdan foydalanish uchun /start buyrug'ini yuboring."
+        )
