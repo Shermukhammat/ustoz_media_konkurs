@@ -1,6 +1,7 @@
 from loader import db, dp, bot, context
 from aiogram import types, F
 from aiogram.enums import ContentType
+from aiogram.utils.text_decorations import html_decoration
 from states import AdminPanel
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
@@ -39,7 +40,10 @@ def _extract_message_data(update: types.Message) -> dict:
     elif ct == ContentType.AUDIO:
         file_id = update.audio.file_id
 
-    caption = update.html_caption if update.caption_entities else update.caption
+    if update.caption_entities:
+        caption = html_decoration.unparse(update.caption or '', update.caption_entities)
+    else:
+        caption = update.caption
 
     return {
         'content_type': ct.value,   # store plain string, not enum
