@@ -492,6 +492,151 @@ async def set_need_invite_people_handler(update: types.Message, state: FSMContex
     )
 
 
+# ─── Show "Ulashish xabari" info ─────────────────────────────────────────────
+
+@r.message(AdminPanel.settings, F.text == "↩️ Ulashish xabari")
+async def show_inline_share(update: types.Message, state: FSMContext):
+    text = db.INLINE_SHARE_TEXT
+    img_url = db.INLINE_IMAGE_URL
+
+    if img_url:
+        img_line = f"🖼 Rasm URL: <code>{img_url}</code>"
+    else:
+        img_line = "🖼 Rasm URL: <i>o'rnatilmagan</i>"
+
+    img_url_display = img_url if img_url else "o'rnatilmagan"
+    await update.answer(
+        f"↩️ Ulashish xabari ma'lumotlari:\n\n"
+        f"📝 Matn: {text}\n"
+        f"🖼 Rasm URL: {img_url_display}",
+        reply_markup=InlineButtons.CHANGE_INLINE_SHARE
+    )
+
+
+# ─── "Change text" inline callback ────────────────────────────────────────────
+
+@r.callback_query(AdminPanel.settings, F.data == 'change_inline_share_text')
+async def change_inline_share_text_callback(update: types.CallbackQuery, state: FSMContext):
+    await state.set_state(AdminPanel.set_inline_share_text)
+    await update.answer()
+    await update.message.answer(
+        "📝 Yangi ulashish matnini yuboring.\n\n"
+        "⚠️ Matn uzunligi 10 dan 1000 belgigacha bo'lishi kerak.",
+        reply_markup=KeyboardButtons.back()
+    )
+
+
+# ─── Receive new inline share text ────────────────────────────────────────────
+
+@r.message(AdminPanel.set_inline_share_text)
+async def set_inline_share_text_handler(update: types.Message, state: FSMContext):
+    # Back button
+    if update.content_type == ContentType.TEXT and update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.settings)
+        await update.answer("Sozlamalar bo'limi", reply_markup=KeyboardButtons.SETTINGS)
+        return
+
+    if update.content_type != ContentType.TEXT:
+        await update.answer(
+            "❗️ Iltimos, faqat matn yuboring.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    text = update.text.strip()
+    if len(text) < 10:
+        await update.answer(
+            "❗️ Matn juda qisqa. Kamida 10 belgi bo'lishi kerak.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+    if len(text) > 1000:
+        await update.answer(
+            "❗️ Matn juda uzun. Ko'pi bilan 1000 belgi bo'lishi mumkin.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    await db.update_inline_share_text(text)
+    await state.set_state(AdminPanel.settings)
+    await update.answer(
+        "✅ Ulashish matni saqlandi!\n\n"
+        f"📝 Yangi matn: <code>{text}</code>",
+        parse_mode='HTML',
+        reply_markup=KeyboardButtons.SETTINGS
+    )
+
+
+# ─── "Change image URL" inline callback ───────────────────────────────────────
+
+@r.callback_query(AdminPanel.settings, F.data == 'change_inline_image_url')
+async def change_inline_image_url_callback(update: types.CallbackQuery, state: FSMContext):
+    await state.set_state(AdminPanel.set_inline_image_url)
+    await update.answer()
+    await update.message.answer(
+        "🖼 Yangi rasm URL sini yuboring.\n\n"
+        "⚠️ URL <b>http://</b> yoki <b>https://</b> bilan boshlanishi va\n"
+        "<b>.jpg</b>, <b>.jpeg</b>, <b>.png</b> yoki <b>.gif</b> bilan tugashi kerak.",
+        parse_mode='HTML',
+        reply_markup=KeyboardButtons.back()
+    )
+
+
+# ─── Receive new inline image URL ─────────────────────────────────────────────
+
+@r.message(AdminPanel.set_inline_image_url)
+async def set_inline_image_url_handler(update: types.Message, state: FSMContext):
+    # Back button
+    if update.content_type == ContentType.TEXT and update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.settings)
+        await update.answer("Sozlamalar bo'limi", reply_markup=KeyboardButtons.SETTINGS)
+        return
+
+    if update.content_type != ContentType.TEXT:
+        await update.answer(
+            "❗️ Iltimos, faqat URL matn ko'rinishida yuboring.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    url = update.text.strip()
+
+    # Validate URL format
+    if not (url.startswith('http://') or url.startswith('https://')):
+        await update.answer(
+            "❗️ URL noto'g'ri. <b>http://</b> yoki <b>https://</b> bilan boshlanishi kerak.",
+            parse_mode='HTML',
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    valid_exts = ('.jpg', '.jpeg', '.png', '.gif')
+    url_lower = url.lower().split('?')[0]  # ignore query params when checking extension
+    if not any(url_lower.endswith(ext) for ext in valid_exts):
+        await update.answer(
+            "❗️ URL noto'g'ri. Rasm URL <b>.jpg</b>, <b>.jpeg</b>, <b>.png</b> yoki <b>.gif</b> bilan tugashi kerak.",
+            parse_mode='HTML',
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    if len(url) > 1000:
+        await update.answer(
+            "❗️ URL juda uzun. Ko'pi bilan 1000 belgi bo'lishi mumkin.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    await db.update_inline_image_url(url)
+    await state.set_state(AdminPanel.settings)
+    await update.answer(
+        "✅ Rasm URL saqlandi!\n\n"
+        f"🖼 Yangi URL: <code>{url}</code>",
+        parse_mode='HTML',
+        reply_markup=KeyboardButtons.SETTINGS
+    )
+
+
 # ─── Settings: Back to admin panel & catch-all ────────────────────────────────
 
 @r.message(AdminPanel.settings, F.text == "⬅️ Orqaga")

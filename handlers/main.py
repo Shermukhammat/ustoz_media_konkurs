@@ -118,17 +118,19 @@ from uuid import uuid4
 async def inline_invite_handler(inline_query: types.InlineQuery):
     inviter_id = inline_query.from_user.id
     url = f"https://t.me/{db.bot.username}?start={inviter_id}"
-    photo_url = "https://odilovfarrux.uz/media/admin_uploaded_files/f6de53182a1c43ed9118acedf675b550.png"
-    caption = (
-        f'<a href="{photo_url}">\u200b</a>'
-        "Ko'nkursda qatnaish uchun pastdagi tugmani bosing 👇👇👇"
-    )
+    icon_url = "https://odilovfarrux.uz/media/admin_uploaded_files/f6de53182a1c43ed9118acedf675b550.png"
+    
+    if db.INLINE_IMAGE_URL:
+        caption = f'<a href="{db.INLINE_IMAGE_URL}">\u200b</a>' + db.INLINE_SHARE_TEXT
+    else:
+        caption = db.INLINE_SHARE_TEXT
+    
     result = types.InlineQueryResultArticle(
-    id=uuid4().hex,
-    title="↪️ Havolani ulashish uchun bosing",
-    thumbnail_url = photo_url,
-    input_message_content=types.InputTextMessageContent(message_text=caption, parse_mode='HTML'),
-    reply_markup=InlineButtons.one_url_button("Ishtrok etish", url)
+        id=uuid4().hex,
+        title="Havolani ulashish uchun bosing",
+        thumbnail_url = icon_url,
+        input_message_content=types.InputTextMessageContent(message_text=caption, parse_mode='HTML'),
+        reply_markup=InlineButtons.one_url_button("Ishtrok etish", url)
     )
 
     await inline_query.answer(

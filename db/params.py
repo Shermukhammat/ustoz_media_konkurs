@@ -115,6 +115,8 @@ class ParamsDB:
         self.ABOUT_LESSONS_MESSAGE = SavedMessage(self.params_data.get('about_lessons_message', {}))        
         self.START_MESSAGE = SavedMessage(self.params_data.get('start_message', {}))
         
+        self.INLINE_SHARE_TEXT: str = self.params_data.get('inline_share_text', "↩️ Ulashish xabari qo'shilmagan")
+        self.INLINE_IMAGE_URL = self.params_data.get('inline_image_url')
 
         self.paramas_sem = Semaphore()
 
@@ -155,4 +157,16 @@ class ParamsDB:
         async with self.paramas_sem:
             self.NEED_INVATE_PEOPLE = count
             self.params_data['need_invate_people'] = count
+            self.yaml.update_yaml(self.params_data)
+
+    async def update_inline_share_text(self, text: str):
+        async with self.paramas_sem:
+            self.INLINE_SHARE_TEXT = text
+            self.params_data['inline_share_text'] = text
+            self.yaml.update_yaml(self.params_data)
+
+    async def update_inline_image_url(self, url: str | None):
+        async with self.paramas_sem:
+            self.INLINE_IMAGE_URL = url
+            self.params_data['inline_image_url'] = url
             self.yaml.update_yaml(self.params_data)

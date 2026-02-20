@@ -28,6 +28,8 @@ class AdminPanel(StatesGroup):
     set_start_message = State()
     set_private_channel = State()
     set_need_invite_people = State()
+    set_inline_share_text = State()
+    set_inline_image_url = State()
 
     add_channel = State()
     remove_channel = State()
