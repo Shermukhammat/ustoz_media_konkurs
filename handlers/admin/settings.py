@@ -419,6 +419,79 @@ async def set_private_channel_handler(update: types.Message, state: FSMContext):
         )
 
 
+# ─── Show "Need Invite People" info ───────────────────────────────────────────
+
+@r.message(AdminPanel.settings, F.text == "🔢 Odam qo'shish soni")
+async def show_need_invite_people(update: types.Message, state: FSMContext):
+    count = db.NEED_INVATE_PEOPLE
+    
+    await update.answer(
+        f"🔢 <b>Odam qo'shish soni:</b> {count} ta\n\n"
+        "Foydalanuvchi konkursda qatnashishi uchun shuncha odam qo'shishi kerak.",
+        parse_mode='HTML',
+        reply_markup=InlineButtons.CHANGE_NEED_INVITE_PEOPLE
+    )
+
+
+# ─── "Change need invite people" inline callback ──────────────────────────────
+
+@r.callback_query(AdminPanel.settings, F.data == 'change_need_invite_people')
+async def change_need_invite_people_callback(update: types.CallbackQuery, state: FSMContext):
+    await state.set_state(AdminPanel.set_need_invite_people)
+    await update.answer()
+    await update.message.answer(
+        "🔢 Yangi qiymatni yuboring.\n"
+        "Bu foydalanuvchi konkursda qatnashishi uchun qo'shishi kerak bo'lgan odamlar soni.\n"
+        "Qiymat <b>1 dan 100 gacha</b> bo'lishi kerak.",
+        parse_mode='HTML',
+        reply_markup=KeyboardButtons.back()
+    )
+
+
+# ─── Receive new "Need Invite People" value ───────────────────────────────────
+
+@r.message(AdminPanel.set_need_invite_people)
+async def set_need_invite_people_handler(update: types.Message, state: FSMContext):
+    # Back button
+    if update.content_type == ContentType.TEXT and update.text == "⬅️ Orqaga":
+        await state.set_state(AdminPanel.settings)
+        await update.answer("Sozlamalar bo'limi", reply_markup=KeyboardButtons.SETTINGS)
+        return
+
+    if update.content_type != ContentType.TEXT:
+        await update.answer(
+            "❗️ Noto'g'ri format. Raqam kiriting.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    raw = update.text.strip()
+    if not raw.isdigit():
+        await update.answer(
+            "❗️ Noto'g'ri format. Raqam kiriting.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    val = int(raw)
+    if not (1 <= val <= 100):
+        await update.answer(
+            "❗️ Iltimos, 1 dan 100 gacha bo'lgan raqam kiriting.",
+            reply_markup=KeyboardButtons.back()
+        )
+        return
+
+    await db.update_need_invite_people(val)
+    
+    await state.set_state(AdminPanel.settings)
+    await update.answer(
+        f"✅ Saqlandi!\n\n"
+        f"🔢 Odam qo'shish soni: {val} ta",
+        parse_mode='HTML',
+        reply_markup=KeyboardButtons.SETTINGS
+    )
+
+
 # ─── Settings: Back to admin panel & catch-all ────────────────────────────────
 
 @r.message(AdminPanel.settings, F.text == "⬅️ Orqaga")

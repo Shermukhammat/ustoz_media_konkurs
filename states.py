@@ -27,6 +27,7 @@ class AdminPanel(StatesGroup):
     set_about_lessons_message = State()
     set_start_message = State()
     set_private_channel = State()
+    set_need_invite_people = State()
 
     add_channel = State()
     remove_channel = State()

@@ -150,3 +150,9 @@ class ParamsDB:
             self.params_data['private_channel_id'] = channel_id
             self.params_data['private_channel_url'] = url
             self.yaml.update_yaml(self.params_data)
+
+    async def update_need_invite_people(self, count: int):
+        async with self.paramas_sem:
+            self.NEED_INVATE_PEOPLE = count
+            self.params_data['need_invate_people'] = count
+            self.yaml.update_yaml(self.params_data)
