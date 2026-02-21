@@ -89,7 +89,6 @@ async def register_user(update: types.Message, invater: User, number: str):
             i.invited_users += 1
             await db.update_user(i.id, invited_users = i.invited_users)
     
-    await update.answer(f"{update.from_user.first_name} siz konkursimiz ishtrokchisiz!", reply_markup=KeyboardButtons.HOME)
     from handlers.admin.settings import send_saved_message
     about = context.ABOUT_LESSONS_MESSAGE
     if about.exists:
