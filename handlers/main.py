@@ -41,10 +41,7 @@ async def main_message(update: types.Message, state: FSMContext):
             await update.answer("❌ Xabar qo'shilmagan", reply_markup=InlineButtons.HOME)
     
     elif update.text == "📱 Telefon raqamim":
-        await update.answer(
-    "❗️Bu raqam faqat g‘olib bo‘lganingizda siz bilan bog‘lanish uchun ishlatiladi.\n"
-    "Iltimos, raqam to‘g‘riligini tekshiring.\n\n"
-    f"<b>Raqam:</b> {user.phone_number}",
+        await update.answer(f"<b>Sizning telefon raqamingiz:</b> {user.phone_number}",
     reply_markup=InlineButtons.one_callback_button("✏️ O‘zgartirish", "update_number"),
     parse_mode="HTML"
 )

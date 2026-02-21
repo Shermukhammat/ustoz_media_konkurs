@@ -91,10 +91,10 @@ async def register_user(update: types.Message, invater: User, number: str):
             await db.update_user(i.id, invited_users = i.invited_users)
     
     await update.answer("✅", reply_markup=KeyboardButtons.HOME)
-    await asyncio.sleep(2)
+    await asyncio.sleep(1)
 
     from handlers.admin.settings import send_saved_message
-    about = context.ABOUT_LESSONS_MESSAGE
+    about = context.SHARE_MESSAGE
     if about.exists:
         await send_saved_message(
             chat_id=user.id,
@@ -125,13 +125,7 @@ async def is_subscribed(user_id : int, chanel : str):
 async def reward_invater(invater: User, user: User):
     await bot.send_message(chat_id=invater.id, text=f"{user.first_name} sizning taklif havolingiz orqali ro‘yxatdan o‘tdi!")
 
-    if invater.invited_users == db.GIFT_POINT:
-        await asyncio.sleep(3)
-        await bot.send_message(chat_id=invater.id, text=random.choice(['🎉', '🥳']))
-        await asyncio.sleep(2)
-        await bot.send_message(chat_id=invater.id, text="🎉 Tabriklaymiz {name}! \nSiz O‘g‘iloy Xurramovaning maxsus sovg‘asini yutib olish imkoniyatni qo‘lga kiritdingiz.".format(name=invater.first_name))                               
-    
-    elif invater.invited_users == db.NEED_INVATE_PEOPLE:
+    if invater.invited_users == db.NEED_INVATE_PEOPLE:
         await asyncio.sleep(3)
         await bot.send_message(chat_id=invater.id, text=random.choice(['🎉', '🥳']))
         await asyncio.sleep(2)

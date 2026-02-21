@@ -77,7 +77,4 @@ async def command_delete_me(update: types.Message, state: FSMContext):
         )
     else:
         await state.clear()
-        await update.answer(
-            "❌ Siz ro'yxatdan o'tmagan ekansiz.\n"
-            "Botdan foydalanish uchun /start buyrug'ini yuboring."
-        )
+        await update.answer("❌ Siz ro'yxatdan o'tmagan siz")

@@ -6,13 +6,7 @@ from loader import db, context
 from db import User
 
 
-SEND_NUMBER_MESSAGE = """
-🎉 Konkursimzda ishtirok etayotganingizdan xursandmiz!
-
-Siz bilan bog‘lanishimiz uchun quyidagi “📲 Telefon raqamimni yuborish” tugmasini bosib telefon raqamingizni yuboring — yoki raqamingizni 951234567 kabi yozib yuborishingiz mumkin.
-"""
-
-
+SEND_NUMBER_MESSAGE = """“📲 Telefon raqamimni yuborish” tugmasini bosib telefon raqamingizni yuboring — yoki raqamingizni 951234567 kabi yozib yuborishingiz mumkin."""
 WELCOME_MESSAGE = "Start xabari yuklanmagan"
 
 MAIN_MESSAGE = """❓ Tanishlarni qanday qo’shish kerak va Ballar qanday hisoblanadi 
