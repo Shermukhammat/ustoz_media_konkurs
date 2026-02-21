@@ -96,12 +96,8 @@ async def register_user(update: types.Message, invater: User, number: str):
     from handlers.admin.settings import send_saved_message
     about = context.SHARE_MESSAGE
     if about.exists:
-        await send_saved_message(
-            chat_id=user.id,
-            saved=about,
-            reply_markup=InlineButtons.HOME,
-            template_kwargs={'name': user.first_name}
-        )
+        from handlers.main import send_invate_post
+        await send_invate_post(update, user)
     else:
         await update.answer("❌ Bepul darslar haiqda habar qo'shilmagan", reply_markup=InlineButtons.HOME)
 
