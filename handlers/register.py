@@ -9,6 +9,7 @@ from utils import can_edit, check_number
 from db import User
 from .context import start_registring, SEND_NUMBER_MESSAGE, MAIN_MESSAGE
 import random, asyncio
+import asyncio
 
 r = Router(name='start')
 dp.include_router(r)
@@ -89,6 +90,9 @@ async def register_user(update: types.Message, invater: User, number: str):
             i.invited_users += 1
             await db.update_user(i.id, invited_users = i.invited_users)
     
+    await update.answer("✅", reply_markup=KeyboardButtons.HOME)
+    await asyncio.sleep(2)
+
     from handlers.admin.settings import send_saved_message
     about = context.ABOUT_LESSONS_MESSAGE
     if about.exists:
