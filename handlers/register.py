@@ -99,7 +99,7 @@ async def register_user(update: types.Message, invater: User, number: str):
             template_kwargs={'name': user.first_name}
         )
     else:
-        await update.answer("❌ Xabar qo'shilmagan", reply_markup=InlineButtons.HOME)
+        await update.answer("❌ Bepul darslar haiqda habar qo'shilmagan", reply_markup=InlineButtons.HOME)
 
     if invater:
         await reward_invater(i, user)

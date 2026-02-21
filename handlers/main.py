@@ -13,7 +13,7 @@ from db import User
 r = Router(name='main')
 dp.include_router(r)
 register = Semaphore()
-INVATE_POST_TEXT = "Bonus darslar va Sovgʻalarni yutib olish uchun sizning maxsus xavolangiz 👇👇👇 \n{url}"
+INVATE_POST_TEXT = "Bonus darslarni yutib olish uchun ushbu xavolani ulashing 👇👇👇 \n{url}"
 
 @r.message(F.text)
 async def main_message(update: types.Message, state: FSMContext):
@@ -99,16 +99,6 @@ async def show_points(update: types.Message, user: User):
     invited = user.invited_users
     bonus_needed = max(0, db.NEED_INVATE_PEOPLE - invited)
     await update.answer(f"Taklif qilingan do'stlaringiz soni {invited} ta", reply_markup=KeyboardButtons.HOME)
-
-def get_bonus_video_status(needed: int) -> str:
-    if needed == 0:
-        return "✅ <b>Bonus darslar qo'lga kiritildi!</b>"
-    return f"❗️<b>Bonus darslarni qo'lga kiritish uchun {needed} ta odam taklif qiling.</b>"
-
-def get_giveaway_status(needed: int) -> str:
-    if needed == 0:
-        return "✅ <b>Maxsus sovg‘a yutish imkoniyati sizda mavjud!</b>"
-    return f"❗️<b>Maxsus sovg‘ani yutish imkoniyatini qo‘lga kiritish uchun {needed}+ ta odam taklif qiling.</b>"
 
 
 

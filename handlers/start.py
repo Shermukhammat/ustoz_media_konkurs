@@ -1,4 +1,4 @@
-from loader import db, dp, bot
+from loader import db, dp, bot, context
 from aiogram import Router, types, F 
 from aiogram.filters import CommandStart, CommandObject, StateFilter, Command
 from asyncio import Semaphore
@@ -7,7 +7,7 @@ from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
 from utils import can_edit, check_number
 from db import User
-from .context import start_registring, MAIN_MESSAGE, WELCOME_MESSAGE
+from .context import start_registring, WELCOME_MESSAGE
 from aiogram.fsm.state import any_state
 
 r = Router(name='start')
@@ -23,8 +23,21 @@ async def command_start(update: types.Message, state: FSMContext, command: Comma
             if int(command.args) == user.id:
                 await update.answer("❗️ O'zningizga ulashib bo'lmaydi")
                 return
-            
-        await update.answer(MAIN_MESSAGE.format(name=user.first_name, bot=db.bot.full_name, bonus=db.BONUS_POINT, gift=db.GIFT_POINT), reply_markup=InlineButtons.HOME)   
+
+        from handlers.admin.settings import send_saved_message
+        start = context.START_MESSAGE
+        if start.exists:
+            await send_saved_message(
+                chat_id=update.from_user.id,
+                saved=start,
+                reply_markup=InlineButtons.chanels(db.chanels),
+                template_kwargs={'name': update.from_user.first_name}
+            )
+        else:
+            await update.answer(
+                WELCOME_MESSAGE.format(name=update.from_user.first_name),
+                reply_markup=InlineButtons.chanels(db.chanels)
+            )
     else:
         if command.args and command.args.isnumeric():
             invater = await db.get_user(int(command.args))
