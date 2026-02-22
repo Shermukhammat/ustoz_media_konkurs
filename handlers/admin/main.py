@@ -64,9 +64,6 @@ async def update_commands(update: types.Message):
     await update.answer(f"✅ {updated} ta admin uchun buyruqlar yangilandi.")
 
 
-@r.message(Command('id'))
-async def show_id(update: types.Message):
-    await update.reply(f"`{update.from_user.id}`", parse_mode='markdown')
 
 
 @r.channel_post(Command('id'))
@@ -76,6 +73,10 @@ async def show_chanel_id(update: types.Message):
     await sleep(3)
     await msg.delete()
     await update.delete()
+
+@r.message(Command('id'))
+async def show_id(update: types.Message):
+    await update.reply(f"`{update.from_user.id}`", parse_mode='markdown')
 
 
 
