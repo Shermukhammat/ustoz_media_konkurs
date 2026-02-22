@@ -25,12 +25,12 @@ async def command_start(update: types.Message, state: FSMContext, command: Comma
                 return
 
         from handlers.admin.settings import send_saved_message
-        start = context.START_MESSAGE
+        start = context.SHARE_MESSAGE
         if start.exists:
             await send_saved_message(
                 chat_id=update.from_user.id,
                 saved=start,
-                template_kwargs={'name': sanitize_name(update.from_user.first_name)}
+                template_kwargs={'name': sanitize_name(update.from_user.first_name), 'url': f"https://t.me/{db.bot.username}?start={update.from_user.id}"}
             )
         else:
             await update.answer(
