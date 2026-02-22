@@ -5,6 +5,7 @@ from aiogram.utils.text_decorations import html_decoration
 from states import AdminPanel
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
+from utils import sanitize_name
 from .main import r
 
 
@@ -251,7 +252,7 @@ async def show_start_message(update: types.Message, state: FSMContext):
             chat_id=update.from_user.id,
             saved=msg,
             reply_markup=InlineButtons.CHANGE_START_MESSAGE,
-            template_kwargs={'name': update.from_user.first_name}
+            template_kwargs={'name': sanitize_name(update.from_user.first_name)}
         )
     else:
         await update.answer(

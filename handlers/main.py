@@ -5,7 +5,7 @@ from asyncio import Semaphore
 from states import UserStates
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
-from utils import can_edit, check_number
+from utils import can_edit, check_number, sanitize_name
 from .context import start_registring, MAIN_MESSAGE
 from db import User
 
@@ -35,7 +35,7 @@ async def main_message(update: types.Message, state: FSMContext):
                 chat_id=user.id,
                 saved=about,
                 reply_markup=InlineButtons.HOME,
-                template_kwargs={'name': user.first_name}
+                template_kwargs={'name': sanitize_name(user.first_name)}
             )
         else:
             await update.answer("❌ Xabar qo'shilmagan", reply_markup=InlineButtons.HOME)
@@ -73,7 +73,7 @@ async def send_invate_post(update: types.Message, user: User):
             chat_id=user.id,
             saved=share,
             reply_markup=markup,
-            template_kwargs={'url': url, 'name': user.first_name}
+            template_kwargs={'url': url, 'name': sanitize_name(user.first_name)}
         )
     else:
         # Fallback: plain text with link

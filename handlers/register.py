@@ -1,11 +1,11 @@
-from loader import db, dp, bot, context
+﻿from loader import db, dp, bot, context
 from aiogram import Router, types, F 
 from aiogram.filters import CommandStart, CommandObject, StateFilter
 from asyncio import Semaphore
 from states import UserStates, RegisterStates
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
-from utils import can_edit, check_number
+from utils import can_edit, check_number, sanitize_name
 from db import User
 from .context import start_registring, SEND_NUMBER_MESSAGE, MAIN_MESSAGE
 import random, asyncio
@@ -119,14 +119,14 @@ async def is_subscribed(user_id : int, chanel : str):
 
 
 async def reward_invater(invater: User, user: User):
-    await bot.send_message(chat_id=invater.id, text=f"{user.first_name} sizning taklif havolingiz orqali ro‘yxatdan o‘tdi!")
+    await bot.send_message(chat_id=invater.id, text=f"{sanitize_name(user.first_name)} sizning taklif havolingiz orqali ro‘yxatdan o‘tdi!")
 
     if invater.invited_users == db.NEED_INVATE_PEOPLE:
         await asyncio.sleep(3)
         await bot.send_message(chat_id=invater.id, text=random.choice(['🎉', '🥳']))
         await asyncio.sleep(2)
         await bot.send_message(chat_id=invater.id, 
-                               text="Tabriklaymiz {name} sizga bonus darslar berildi! Quydagi havola orqali bonus darslar kanaliga qo'shling 👇".format(name=invater.first_name),
+                               text="Tabriklaymiz {name} sizga bonus darslar berildi! Quydagi havola orqali bonus darslar kanaliga qo'shling 👇".format(name=sanitize_name(invater.first_name)),
                                reply_markup=InlineButtons.one_url_button("📚 Qo'shilish", db.PRIVATE_CHANNEL_URL))
 
 
