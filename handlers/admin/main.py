@@ -11,6 +11,25 @@ from asyncio import sleep
 import pandas as pd
 
 
+ADMIN_COMMANDS = [
+    types.BotCommand(command="admin", description="👨🏻‍💻 Admin panel"),
+    types.BotCommand(command="id", description="🆔 ni olish")
+]
+
+async def set_admin_commands(user_id: int):
+    """Give a user the /admin command visible only in their private chat."""
+    await bot.set_my_commands(
+        commands=ADMIN_COMMANDS,
+        scope=types.BotCommandScopeChat(chat_id=user_id)
+    )
+
+async def remove_admin_commands(user_id: int):
+    """Remove the /admin command from a user's private chat."""
+    await bot.delete_my_commands(
+        scope=types.BotCommandScopeChat(chat_id=user_id)
+    )
+
+
 r = Router(name='admin')
 dp.include_router(r)
 
@@ -27,6 +46,22 @@ async def show_admin_panel(update: types.Message, state: FSMContext):
         await update.answer("👨🏻‍💻 Admin panel", reply_markup=KeyboardButtons.ADMIN_PANEL)
 
 
+@r.message(Command('update_commands'))
+async def update_commands(update: types.Message):
+    user = await db.get_user(update.from_user.id)
+    if not (user and (user.is_admin or user.id == db.dev_id)):
+        return
+
+    admins = await db.get_admins()
+    updated = 0
+    for admin in admins:
+        try:
+            await set_admin_commands(admin.id)
+            updated += 1
+        except Exception:
+            pass  # skip if admin blocked the bot
+
+    await update.answer(f"✅ {updated} ta admin uchun buyruqlar yangilandi.")
 
 
 @r.message(Command('id'))
@@ -129,6 +164,7 @@ async def creare_admin(update: types.Message, state: FSMContext):
         user = await db.get_user(int(update.text))
         if user:
             await db.update_user(id = user.id, is_admin = True)
+            await set_admin_commands(user.id)
             await state.set_state(AdminPanel.main)
             await update.answer("✅ Admin qo'shildi", reply_markup=KeyboardButtons.ADMIN_PANEL)
 
@@ -155,6 +191,7 @@ async def remove_admin(update: types.Message, state: FSMContext):
             else:
                 await state.set_state(AdminPanel.main)
                 await db.update_user(id = user.id, is_admin = False)
+                await remove_admin_commands(user.id)
                 await update.answer("✅ Admin o'chirildi", reply_markup=KeyboardButtons.ADMIN_PANEL)
         else:
             await update.reply("❗️ Bunday admin topilmadi", reply_markup=KeyboardButtons.back())
