@@ -134,7 +134,7 @@ from asyncio import sleep
 @dp.channel_post(F.text)
 async def show_id(update: types.Message):
     if update.text and update.text.startswith('/id'):
-        msg = await update.answer(f"`{update.from_user.id}`", parse_mode='markdown')
+        msg = await update.answer(f"`{update.chat.id}`", parse_mode='markdown')
         await sleep(3)
         await msg.delete()
         await update.delete()
