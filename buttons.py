@@ -107,3 +107,9 @@ class InlineButtons:
         return InlineKeyboardMarkup(inline_keyboard=[
                                    [InlineKeyboardButton(text=name, callback_data=data)]
                                 ])
+
+    @staticmethod
+    def share_button(user_id: str):
+        return InlineKeyboardMarkup(inline_keyboard=[
+            [InlineKeyboardButton(text="↪️ Ulashish", switch_inline_query=f"invite_{user_id}")]
+        ])

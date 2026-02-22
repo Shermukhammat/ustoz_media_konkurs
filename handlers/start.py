@@ -30,6 +30,7 @@ async def command_start(update: types.Message, state: FSMContext, command: Comma
             await send_saved_message(
                 chat_id=update.from_user.id,
                 saved=start,
+                reply_markup=InlineButtons.share_button(update.from_user.id),
                 template_kwargs={'name': sanitize_name(update.from_user.first_name), 'url': f"https://t.me/{db.bot.username}?start={update.from_user.id}"}
             )
         else:
