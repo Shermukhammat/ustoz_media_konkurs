@@ -5,7 +5,7 @@ from asyncio import Semaphore
 from states import UserStates, RegisterStates
 from aiogram.fsm.context import FSMContext
 from buttons import KeyboardButtons, InlineButtons
-from utils import can_edit, check_number
+from utils import can_edit, check_number, sanitize_name
 from db import User
 from .context import start_registring, WELCOME_MESSAGE
 from aiogram.fsm.state import any_state
@@ -30,13 +30,11 @@ async def command_start(update: types.Message, state: FSMContext, command: Comma
             await send_saved_message(
                 chat_id=update.from_user.id,
                 saved=start,
-                reply_markup=InlineButtons.chanels(db.chanels),
-                template_kwargs={'name': update.from_user.first_name}
+                template_kwargs={'name': sanitize_name(update.from_user.first_name)}
             )
         else:
             await update.answer(
-                WELCOME_MESSAGE.format(name=update.from_user.first_name),
-                reply_markup=InlineButtons.chanels(db.chanels)
+                WELCOME_MESSAGE.format(name=sanitize_name(update.from_user.first_name))
             )
     else:
         if command.args and command.args.isnumeric():

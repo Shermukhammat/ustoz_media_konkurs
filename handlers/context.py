@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from buttons import InlineButtons
 from loader import db, context
 from db import User
+from utils import sanitize_name
 
 
 SEND_NUMBER_MESSAGE = """“📲 Telefon raqamimni yuborish” tugmasini bosib telefon raqamingizni yuboring — yoki raqamingizni 951234567 kabi yozib yuborishingiz mumkin."""
@@ -39,10 +40,10 @@ async def start_registring(update: types.Message, state: FSMContext, invater: Us
             chat_id=update.from_user.id,
             saved=start,
             reply_markup=InlineButtons.chanels(db.chanels),
-            template_kwargs={'name': update.from_user.first_name}
+            template_kwargs={'name': sanitize_name(update.from_user.first_name)}
         )
     else:
         await update.answer(
-            WELCOME_MESSAGE.format(name=update.from_user.first_name),
+            WELCOME_MESSAGE.format(name=sanitize_name(update.from_user.first_name)),
             reply_markup=InlineButtons.chanels(db.chanels)
         )
