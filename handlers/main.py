@@ -94,8 +94,8 @@ async def update_number(update: types.CallbackQuery, state: FSMContext):
 
 async def show_points(update: types.Message, user: User):
     invited = user.invited_users
-    bonus_needed = max(0, db.NEED_INVATE_PEOPLE - invited)
-    await update.answer(f"Taklif qilingan do'stlaringiz soni {invited} ta", reply_markup=KeyboardButtons.HOME)
+    replay_markup = InlineButtons.one_url_button("📕 Bepul darsalar kanali", db.PRIVATE_CHANNEL_URL) if db.NEED_INVATE_PEOPLE <= user.invited_users else KeyboardButtons.HOME
+    await update.answer(f"Taklif qilingan do'stlaringiz soni {invited} ta", reply_markup=replay_markup)
 
 
 

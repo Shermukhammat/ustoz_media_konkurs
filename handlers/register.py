@@ -125,8 +125,8 @@ async def reward_invater(invater: User, user: User):
         await asyncio.sleep(3)
         await bot.send_message(chat_id=invater.id, text=random.choice(['🎉', '🥳']))
         await asyncio.sleep(2)
-        await bot.send_message(chat_id=invater.id, 
-                               text="Tabriklaymiz {name} sizga bonus darslar berildi! Quydagi havola orqali bonus darslar kanaliga qo'shling 👇".format(name=sanitize_name(invater.first_name)),
+        await bot.send_message(chat_id=invater.id,
+                               text=f"✅ Tabriklaymiz siz {invater.invited_users} ta do'stingizni taklif  qildingiz va video  darslar  yopiq kanalini bepulga qo'lga  kiritingiz",
                                reply_markup=InlineButtons.one_url_button("📚 Qo'shilish", db.PRIVATE_CHANNEL_URL))
 
 
@@ -135,12 +135,12 @@ async def reward_invater(invater: User, user: User):
 async def approve_bonus_chanel_join(request: types.ChatJoinRequest):
     if not db.PRIVATE_CHANNEL_ID or request.chat.id != db.PRIVATE_CHANNEL_ID:
         return
-        
+
     user = await db.get_user(request.from_user.id)
     if user and user.invited_users >= db.NEED_INVATE_PEOPLE:
         await request.approve()
-        await bot.send_message(chat_id=user.id, text= "✅ Bonus video darslar kanaliga qoshilish sorovingiz qabul qilndi",
-                                   reply_markup=InlineButtons.one_url_button("Kanalga kirish", db.PRIVATE_CHANNEL_URL))
+        await bot.send_message(chat_id=user.id, text= f"✅ Kanalga kirshingiz mumkun",
+                                   reply_markup=InlineButtons.one_url_button("📚 Kanalga kirish", db.PRIVATE_CHANNEL_URL))
         
 
 
