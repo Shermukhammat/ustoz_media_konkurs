@@ -35,7 +35,7 @@ async def main_message(update: types.Message, state: FSMContext):
                 chat_id=user.id,
                 saved=about,
                 reply_markup=InlineButtons.HOME,
-                template_kwargs={'name': sanitize_name(user.first_name)}
+                template_kwargs={'name': sanitize_name(user.first_name), 'url': f"https://t.me/{db.bot.username}?start={user.id}"}
             )
         else:
             await update.answer("❌ Xabar qo'shilmagan", reply_markup=InlineButtons.HOME)

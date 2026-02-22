@@ -54,6 +54,10 @@ def _extract_message_data(update: types.Message) -> dict:
         'parse_mode': 'HTML' if update.caption_entities else None,
     }
 
+class _SafeDict(dict):
+    """Return the original placeholder for any missing key, e.g. {unknown} → '{unknown}'."""
+    def __missing__(self, key):
+        return '{' + key + '}'
 
 async def send_saved_message(chat_id: int,
                              saved,
@@ -65,7 +69,7 @@ async def send_saved_message(chat_id: int,
 
     def fmt(s):
         if s and template_kwargs:
-            return s.format(**template_kwargs)
+            return s.format_map(_SafeDict(template_kwargs))
         return s
 
     if ct == 'text':
