@@ -131,8 +131,11 @@ async def reward_invater(invater: User, user: User):
 
 
 
-@r.chat_join_request(F.chat.id == db.PRIVATE_CHANNEL_ID)
+@r.chat_join_request()
 async def approve_bonus_chanel_join(request: types.ChatJoinRequest):
+    if not db.PRIVATE_CHANNEL_ID or request.chat.id != db.PRIVATE_CHANNEL_ID:
+        return
+        
     user = await db.get_user(request.from_user.id)
     if user and user.invited_users >= db.NEED_INVATE_PEOPLE:
         await request.approve()
